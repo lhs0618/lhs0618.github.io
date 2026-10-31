@@ -1,0 +1,1420 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>기여 규칙 프로토타입</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --t1:#2b2d2f; --t2:#4a4d50; --t3:#606468; --t4:#848a8f; --t5:#b2b8bf;
+  --line:#dde1e8; --nav-line:#c3c9d0; --head:#f4f7f9; --gray:#ecf0f4;
+  --blue:#1e6eff; --blue-line:#2f87f7; --blue-soft:#e9f1ff;
+  --red:#ff323c; --green:#1a8a4a; --green-soft:#e7f6ec;
+  --bg:#fff; --surface:#fff; --text:var(--t1); --sub:var(--t3); --muted:var(--t4); --primary:var(--blue); --danger:var(--red);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff}
+body{color:var(--t1);font-family:"Pretendard JP Variable","Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;color:inherit} input,select{font:inherit}
+.ic{display:inline-block;vertical-align:middle;flex-shrink:0}
+/* GNB */
+.gnb{position:sticky;top:0;z-index:20;height:46px;background:#fff;border-bottom:1px solid var(--nav-line);display:flex;align-items:center;padding:0 10px 0 20px;gap:4px;font-size:14px;color:var(--t2)}
+.gnb .it{display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;white-space:nowrap}
+.gnb .sp{flex:1}
+.gnb .kbd{font-size:11px;background:var(--gray);border-radius:4px;padding:0 5px;color:var(--t3);margin-left:2px}
+.gnb .vl{width:1px;height:16px;background:var(--line);margin:0 4px}
+/* LNB */
+.shell{display:flex;min-height:calc(100vh - 46px)}
+.lnb{width:84px;flex-shrink:0;border-right:1px solid var(--nav-line);padding:32px 20px 0;display:flex;flex-direction:column;align-items:center;gap:6px;position:sticky;top:46px;height:calc(100vh - 46px);background:#fff}
+.lnb .app{width:32px;height:32px;border-radius:6px;background:var(--gray);color:var(--t4);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:6px 0 22px}
+.lnb .nv{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--t2)}
+.lnb .nv.on{background:var(--blue-soft);color:var(--blue)}
+.content{flex:1;min-width:0;padding:32px 56px 140px}
+.page{max-width:1080px}
+/* page header */
+h1{display:flex;align-items:center;gap:8px;font-size:32px;font-weight:700;line-height:48px;margin:0;color:var(--t1)}
+h1 .ic{color:var(--t2)}
+.mtabs-wrap{max-width:892px;border-bottom:1px solid var(--line);margin-top:24px}
+.mtabs{display:flex;gap:12px;list-style:none;margin:0;padding:0}
+.mtab{font-size:16px;font-weight:500;line-height:24px;color:var(--t3);padding:6px 8px;border-radius:6px 6px 0 0;cursor:pointer;position:relative}
+.mtab:hover{color:var(--t1)}
+.mtab.on{color:var(--t1)}
+.mtab.on:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--t1)}
+.desc{font-size:14px;line-height:21px;color:#000;margin:36px 0 0}
+.desc a{font-size:16px;line-height:24px;color:var(--t3)}
+.guide{display:inline-flex;align-items:center;gap:2px;color:var(--t3);text-decoration:underline;text-underline-offset:3px;cursor:pointer;margin-left:4px}
+.subtab{display:flex;gap:12px;border-bottom:1px solid var(--line);margin-top:32px}
+.subtab button{border:0;background:none;padding:4px 6px 8px;font-size:14px;font-weight:500;line-height:20px;color:var(--t4);border-bottom:1px solid transparent;margin-bottom:-1px}
+.subtab button.on{color:var(--blue);border-color:var(--blue-line)}
+/* section */
+.sec-h{display:flex;justify-content:space-between;align-items:center;min-height:32px;margin-top:24px;gap:12px}
+.sec-t{display:flex;align-items:center;gap:6px;font-size:16px;color:var(--t2);flex-wrap:wrap}
+.sec-t .ic{color:var(--t4)}
+.sec-sub{font-size:13px;color:var(--t4);margin-left:4px}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:0 10px;border-radius:6px;border:1px solid transparent;background:var(--gray);color:var(--t1);font-size:14px;font-weight:500;line-height:21px;white-space:nowrap}
+.btn:hover{filter:brightness(.97)}
+.btn.outline{background:#fff;border-color:var(--blue-line);color:var(--blue)}
+.btn.primary{background:var(--blue);color:#fff}
+.btn.primary:disabled{background:#e5e9ee;color:#a5abb2;cursor:default;filter:none}
+.btn.gray{background:var(--gray);color:var(--t1)}
+.btn.w130{width:130px}
+.btn.sm{height:28px;font-size:13px;padding:0 8px}
+.btn.ghost{background:none;color:var(--t3)}
+.ic-btn{border:0;background:none;padding:0;color:var(--t4);display:inline-flex;align-items:center}
+.ic-btn:hover{color:var(--t1)}
+.ic-btn.dis{color:#ced4dc;cursor:default}
+/* chart */
+.chart{position:relative;height:160px;border:1px solid var(--line);border-radius:4px;margin-top:12px;overflow:hidden;background:#fff}
+.chart .axis{position:absolute;left:0;right:0;bottom:35px;height:1px;background:#c3c9d0}
+.chart .vline{position:absolute;top:0;bottom:35px;width:1px;background:#c3c9d0}
+.chart .bar{position:absolute;bottom:35px;border:1px solid #0f50f0;border-bottom:0;border-right:0}
+.chart .bar.click{background:#c5dcff}
+.chart .bar.view{background:#5297ff;border-color:#0f50f0}
+.chart .bar.ev{background:#e3f4e7;border-color:#34a853;border-right:1px solid #34a853}
+.chart .lb{position:absolute;bottom:11px;font-size:12px;color:#575a5e;white-space:nowrap;transform:translateX(-50%)}
+.chart .lb.l{transform:none}.chart .lb.r{transform:translateX(-100%)}
+.chart .mk{position:absolute;bottom:29px;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:6px solid #0f50f0;transform:translateX(-50%)}
+.chart .mk.g{border-top-color:#1e7d3a}
+.chart .editing{position:absolute;inset:0;background:rgba(43,45,47,.55);color:#fff;font-size:12px;padding:10px 12px}
+/* table */
+.table-wrap{border:1px solid var(--line);border-radius:4px;margin-top:8px;overflow-x:auto;background:#fff}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th,td{text-align:left;vertical-align:middle;white-space:nowrap}
+th{background:var(--head);color:var(--t4);font-size:13px;font-weight:400;line-height:19.5px;padding:10px;border-bottom:1px solid var(--line);height:58px}
+th p{margin:0}
+th p+p{font-size:12px;line-height:18px}
+.table-wrap:not(.event-tab) table{table-layout:fixed;min-width:1080px}
+.table-wrap:not(.event-tab) th:nth-child(n+2):nth-child(-n+5){width:150px}
+.table-wrap.editing:not(.event-tab) th:nth-child(n+2):nth-child(-n+5){width:170px}
+.camp-name .nm{white-space:nowrap}
+.table-wrap.editing:not(.event-tab) th:last-child{width:180px}
+td{font-size:13px;font-weight:400;color:var(--t4);line-height:19.5px;padding:10px;height:55px;border-bottom:1px solid var(--line)}
+tbody tr:last-child td{border-bottom:0}
+tr.global td{color:var(--t2);font-weight:500}
+tr.global td:first-child{border-left:2px solid var(--blue-line);padding-left:30px}
+.table-wrap th:first-child,.table-wrap td:first-child{padding-left:32px}
+.table-wrap th:last-child,.table-wrap td:last-child{padding-right:32px}
+tr.default td{color:var(--t5);font-style:italic}
+td .cn{display:inline-flex;align-items:center;gap:4px}
+td .ic.inf{color:var(--t4)}
+td.zero{color:var(--t4)}
+td.upd{color:var(--t2);font-weight:500;white-space:nowrap}
+td.upd .ic{color:var(--t4);margin-left:2px}
+td.act{width:150px}
+td.act .wrap{display:flex;align-items:center;gap:12px;justify-content:flex-end}
+tr.chan.virtual td{color:var(--t5)}
+tr.camp td{background:#fafbfc}
+tr.camp td:first-child{padding-left:24px}
+.camp-name{display:flex;align-items:flex-start;gap:4px}
+.camp-name .ic{color:var(--t5);margin-top:1px}
+.camp-name .nm{color:var(--t2)}
+.camp-name .meta{display:block;font-size:12px;color:var(--t5);white-space:normal;line-height:16px}
+.camp-name>span{min-width:0;flex:1}
+tr.camp td:first-child{white-space:normal}
+.tag.stop{background:#fff2e5;color:#c25e00}
+.tag.soon{background:#fff;color:#c25e00;box-shadow:inset 0 0 0 1px #f5c48a}
+tr.camp.paused td{background:#f7f8fa}
+tr.camp.haspz td:not(:first-child){vertical-align:top;padding-top:8px}
+.pzhint{width:0;overflow:visible;margin-top:12px;font-size:12px;line-height:18px;color:#c25e00;white-space:nowrap}
+/* 7번: 바로 위 단계와 다른 값 */
+tr.default td{color:var(--t5)}
+td.same{color:var(--t4)}
+tr.global td.same{color:var(--t2);font-weight:500}
+td.dif{color:var(--blue);font-weight:500}
+tr.global td.dif{color:var(--blue)}
+tr.chan.follow td{color:var(--t4)}
+.follow-upd{color:var(--t5)!important;font-weight:400!important}
+.tip{position:relative;cursor:default}
+/* 에어브릿지 툴팁 (abc-tooltip-content) */
+#tipPop{position:fixed;z-index:80;display:none;max-width:220px;background:#e6f5ff;border:1px solid #d7ebfa;border-radius:4px;padding:8px 12px;font-size:13px;line-height:18.2px;font-weight:400;font-style:normal;color:var(--t1);box-shadow:0 4px 2px rgba(0,0,0,.04),0 2px 3px rgba(0,0,0,.03);white-space:normal;word-break:keep-all}
+#tipPop.open{display:block}
+#tipPop a{display:inline-flex;align-items:center;gap:2px;color:var(--blue);text-decoration:underline;text-underline-offset:2px;margin-top:2px;cursor:pointer}
+.tip .ic.inf{cursor:help}
+.f7{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-top:20px}
+.f7top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.cpo{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--t2);cursor:pointer;user-select:none}
+.cpo input{width:16px;height:16px;accent-color:var(--blue);margin:0}
+.cpo .n{color:var(--t4)}
+.cpo.dis{color:var(--t4);cursor:default}
+.cpo.dis input{cursor:default}
+.cpo input:checked~.n{color:var(--blue);font-weight:500}
+.seg{display:inline-flex;gap:2px;background:var(--gray);border-radius:8px;padding:4px}
+.seg button{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 18px;border:0;border-radius:6px;background:none;font-size:15px;font-weight:500;color:var(--t3)}
+.seg button:hover{color:var(--t1)}
+.seg button.on{background:#fff;color:var(--t1);box-shadow:0 1px 2px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04)}
+.seg .n{font-weight:400;color:var(--t4)}
+.seg button.on .n{color:var(--blue);font-weight:500}
+.f7lg{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t4)}
+.f7lg .ctx{color:var(--t2);font-weight:500}
+.f7lg .bar{width:1px;height:12px;background:var(--line);margin:0 4px}
+.f7lg .sw{color:var(--blue);font-weight:500;font-size:13px}
+.evbox{border-radius:6px;transition:box-shadow .3s}
+.evbox.flash{box-shadow:0 0 0 3px #cfe1ff}
+tr.camp.paused .nm{color:var(--t4)}
+tr.camp.paused.view td .old{color:var(--t5);text-decoration:line-through;margin-right:6px}
+tr.camp.paused.view td .now{color:var(--t4)}
+tr.camp.paused.view td.pz{white-space:nowrap}
+.endf{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:var(--t3);font-style:normal}
+/* 종료일 달력 (에어브릿지 ABCalendar 형태) */
+.cal-trig{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 8px;white-space:nowrap;flex-shrink:0;border:0;border-radius:6px;background:#dde1e8;color:var(--t1);font-size:14px;font-weight:400}
+.cal-trig .ic{color:var(--t2)}
+.cal-trig.empty{color:var(--t3)}
+.cal-trig.on{box-shadow:0 0 0 1px var(--blue-line)}
+#calPop{position:fixed;z-index:70;display:none;background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 4px 8px rgba(0,0,0,.09),0 0 2px rgba(0,0,0,.06)}
+#calPop.open{display:flex}
+.cal-pre{width:121px;padding:10px 0 10px 5px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:2px}
+.cal-pre button{height:32px;border:0;border-radius:6px;background:none;text-align:left;padding:0 10px;font-size:14px;font-weight:500;color:var(--t3);margin-right:5px}
+.cal-pre button:hover{background:var(--head)}
+.cal-pre button.on{background:var(--blue-soft);color:var(--blue)}
+.cal-main{padding:16px 20px 16px}
+.cal-top{display:flex;align-items:center;gap:8px}
+.cal-field{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:1px solid var(--line);border-radius:6px;font-size:14px;color:var(--t1);min-width:150px}
+.cal-field .ic{color:var(--t4)}
+.cal-field input{border:0;outline:none;width:96px;font-size:14px;color:var(--t1);background:none}
+.cal-field.bad{border-color:var(--red)}
+.cal-months{display:flex;gap:32px;margin-top:14px}
+.cal-mh{display:flex;align-items:center;gap:8px;height:30px;margin-bottom:12px}
+.cal-mh b{font-size:20px;font-weight:400;color:var(--t1);padding:0 6px}
+.cal-nav{width:30px;height:30px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--t3);display:inline-flex;align-items:center;justify-content:center;padding:0}
+.cal-nav:disabled{color:#ced4dc;cursor:default}
+.cal-g{border-collapse:collapse;min-width:0;width:auto}
+.cal-g th{background:none;border:0;padding:0 0 8px;font-size:10px;color:#a5abb2;width:32px;text-align:center;font-weight:400}
+.cal-g td{border:0;width:32px;height:32px;padding:0;text-align:center;font-size:13px;color:var(--t1);cursor:pointer}
+.cal-g td:hover{background:var(--head)}
+.cal-g td.today{font-weight:700}
+.cal-g td.dis{color:#c3c9d0;cursor:default;background:#fff}
+.cal-g td.sel{background:#2f87f7;color:#fff;font-weight:500}
+.cal-g td.blank{cursor:default;background:#fff}
+.cal-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:14px}
+.cal-note{font-size:12px;line-height:18px;color:var(--t4)}
+.lnk2{border:0;background:none;color:var(--blue);font-size:12px;padding:0}
+.endhint{display:block;margin-top:4px;font-size:12px;color:#c25e00;white-space:normal}
+.toggle{border:0;background:none;padding:0;color:var(--t4);display:inline-flex;vertical-align:middle;position:absolute;left:10px;top:50%;transform:translateY(-50%)}
+tr.chan td:first-child{position:relative}
+.tag{display:inline-block;font-size:11px;font-weight:500;line-height:18px;border-radius:4px;padding:0 6px;margin-left:6px;vertical-align:1px;font-style:normal}
+.tag.on{background:var(--green-soft);color:var(--green)}
+.tag.cnt{background:var(--gray);color:var(--t3)}
+.tag.std{background:var(--blue-soft);color:var(--blue)}
+.tag.cus{background:#fff2e5;color:#c25e00}
+.val{display:inline-flex;align-items:center;gap:6px}
+.val.inh{color:var(--t5)}
+.val .from{font-size:11px;color:var(--t5)}
+/* edit cells */
+.cell-edit{display:inline-flex;gap:5px;align-items:center}
+.cell-edit input{width:76px;height:32px;padding:0 10px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--t1);font-size:14px;box-shadow:inset 1px 1px 2px rgba(0,0,0,.04)}
+.cell-edit input:focus,.selbox select:focus{outline:none;border-color:var(--blue-line)}
+.event-tab .cell-edit input{width:240px}
+.selbox{position:relative;display:inline-flex;align-items:center}
+.selbox select{appearance:none;-webkit-appearance:none;height:32px;padding:0 26px 0 10px;border:1px solid transparent;border-radius:6px;background:var(--gray);color:var(--t1);font-size:14px;font-weight:500;cursor:pointer}
+.selbox .ic{position:absolute;right:6px;pointer-events:none;color:var(--t2)}
+.selbox.white select{background:#fff;border-color:var(--line);font-weight:400;box-shadow:inset 1px 1px 2px rgba(0,0,0,.04)}
+.inh-btn{border:1px dashed var(--line);background:#fff;border-radius:6px;height:32px;padding:0 10px;color:var(--t4);font-size:13px}
+.reset{border:0;background:none;color:var(--t4);font-size:12px}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:8px;flex-wrap:wrap}
+.actions .l,.actions .r{display:flex;gap:6px}
+.actions.end{margin-top:24px;padding-top:16px;border-top:1px solid var(--line)}
+.err{color:var(--red);font-size:13px;margin-top:8px}
+/* info boxes */
+.info-box{display:flex;gap:6px;align-items:flex-start;background:var(--head);border-radius:4px;padding:10px 12px;font-size:13px;line-height:19.5px;color:var(--t3);margin-top:12px}
+.info-box .ic{color:var(--t4);margin-top:1px}
+.info-box b{color:var(--t2);font-weight:500;margin-right:4px}
+.info-box.warn{background:#fff8e6;color:#9a5a00}.info-box.warn .ic{color:#e08a00}
+.tbl-note{margin-top:8px}
+.rule-box{margin-top:12px}
+/* event-specific */
+.asbox{border:1px solid #e5e9ee;border-radius:12px;padding:24px;margin-top:16px}
+.asbox:first-of-type{margin-top:48px}
+.asbox-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.asbox-t{display:flex;align-items:center;gap:8px}
+.asbox-t p{margin:0;font-size:20px;font-weight:700;line-height:30px;color:var(--t1)}
+.asbox ul{margin:0;padding:0 0 0 16px;font-size:14px;line-height:22.4px;color:var(--t1)}
+.asbox li{margin-bottom:2px}
+.asbox-f{margin-top:6px;font-size:14px;line-height:21px;color:var(--t1)}
+.asbox-f span:first-child{font-weight:500;margin-right:6px}
+.asbox-f span+span{margin-right:6px}
+.btn.sm2{height:32px;font-size:14px;font-weight:500;color:var(--t1);background:var(--gray);text-decoration:none;cursor:pointer}
+.tg{width:40px;height:20px;border-radius:99999px;background:var(--line);border:0;padding:0 3px;display:inline-flex;align-items:center;cursor:pointer;margin-left:4px}
+.tg span{width:14px;height:14px;border-radius:50%;background:#fff;display:block}
+.memo-ic{color:#d3d8de;margin-left:6px;vertical-align:middle}
+.memo-ic.has{color:var(--blue)}
+td.upd .memo-ic .ic,.memo-ic .ic{color:inherit;margin-left:0}
+.memo-ic{position:relative}
+.memo-ic .dot{position:absolute;top:-2px;right:-3px;width:7px;height:7px;border-radius:50%;background:#e5484d;border:1.5px solid #fff}
+
+th.th-upd{width:130px}
+th.th-memo{width:74px}
+td.mcol{text-align:right;padding-left:0;white-space:nowrap}
+td.mcol .memo-ic{margin-left:0}
+.memo-modal{max-width:560px}
+.memo-modal h3 small{font-size:14px;font-weight:400;color:var(--t4);margin-left:8px}
+.mm-body{display:flex;flex-direction:column;gap:10px;max-height:60vh}
+.mm-it{border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.mm-h{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--t4);margin-bottom:6px}
+.mm-h b{color:var(--t2);font-weight:500}
+.mm-t{font-size:14px;line-height:21px;color:var(--t1);white-space:pre-wrap}
+.mm-empty{font-size:14px;color:var(--t4);padding:8px 0}
+.mm-edit{display:flex;flex-direction:column;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.mm-edit label{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--t3)}
+.mm-edit textarea,.mm-edit input{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:14px;color:var(--t1);font-family:inherit}
+.mm-edit textarea:focus,.mm-edit input:focus{outline:none;border-color:var(--blue-line)}
+.cf2-memo{display:flex;flex-direction:column;gap:6px;margin-top:10px;font-size:13px;color:var(--t3)}
+.cf2-memo em{font-style:normal;color:var(--t5);margin-left:4px}
+.cf2-memo textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:13px;color:var(--t1);font-family:inherit;resize:vertical}
+.cf2-memo textarea:focus{outline:none;border-color:var(--blue-line)}
+.evbox{margin-top:40px}
+.evf7{margin-top:12px;margin-bottom:12px}
+.evtable tr.rest td{color:var(--t3)}
+.evtable td.same{color:var(--t4)}
+.sec-n{font-size:15px;font-weight:500;color:var(--blue);margin-left:6px}
+.evtable{min-width:0}
+.evtable td{color:var(--t2)}
+.evtable td.dif{color:var(--blue);font-weight:500}
+.ev-empty{padding:16px 10px;color:var(--t4);font-size:13px}
+.ev-add-row td{background:#fff}
+.sim{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--t3);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+.sim b{color:var(--t2);font-weight:500;margin-right:4px}
+.sim-r{font-weight:600;color:var(--blue);font-size:14px}
+.sim-from{font-size:12px;color:var(--t4)}
+.ch-btn{border:1px solid var(--line);background:#fff;border-radius:6px;height:32px;padding:0 10px;font-size:13px}
+.ch-ex{color:var(--t4);font-size:12px}
+.pickrow td{background:#fafbfc}
+.picker{border:1px solid var(--line);border-radius:4px;background:#fff;padding:12px}
+.picker label{display:flex;align-items:center;gap:6px;font-size:13px;padding:3px 0;cursor:pointer}
+.chgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0 12px;max-height:220px;overflow:auto}
+.picker-foot{text-align:right;margin-top:8px}
+/* modal (airbridge) */
+.bg{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-start;justify-content:center;padding:12vh 16px 16px;z-index:50;overflow:auto}
+.bg.open{display:flex}
+.modal{position:relative;background:#fff;border:1px solid var(--line);border-radius:4px;width:min(710px,100%);padding:20px 0 0;display:flex;flex-direction:column;max-height:84vh}
+.m-close{position:absolute;right:-38px;top:0;border:0;background:none;color:rgba(255,255,255,.7);padding:0}
+.m-head{padding:0 20px 20px;border-bottom:1px solid rgba(0,0,0,.06)}
+.m-head h3{margin:0;font-size:18px;font-weight:500;line-height:27px;color:var(--t2)}
+.m-body{padding:20px;overflow:auto;font-size:14px;color:var(--t2)}
+.m-foot{display:flex;gap:6px;padding:0 20px 20px}
+.m-foot .btn{flex:1}
+.modal.leave{width:min(574px,100%)}
+.filters{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.filters input[type=text],.filters #pq,.filters #eq{flex:1;min-width:180px;height:32px;padding:0 10px;border:1px solid var(--line);border-radius:6px;box-shadow:inset 1px 1px 2px rgba(0,0,0,.04)}
+.filters label{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--t3)}
+.pickwrap{border:1px solid var(--line);border-radius:4px;max-height:46vh;overflow:auto}
+.pick{width:100%;min-width:0}
+.pick td{height:44px;padding:8px 10px;font-size:13px;color:var(--t2);cursor:pointer}
+.pick td.c2{color:var(--t4)}.pick td.c3{color:var(--t5)}
+.pick tr:hover td{background:var(--head)}
+.pick tr.disabled td{color:var(--t5);cursor:default;background:none}
+.count{font-size:12px;color:var(--t4);margin-bottom:6px}
+/* 확인 창 */
+.cf2-body{padding:20px;overflow:auto;display:flex;flex-direction:column;gap:12px}
+.cf2-lead{margin:0 0 4px;font-size:14px;line-height:21px;color:var(--t2)}
+.cf2-sum{background:var(--head);border-radius:4px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.cf2-sum div{display:flex;gap:10px;align-items:baseline;font-size:14px;color:var(--t3);flex-wrap:wrap}
+.cf2-sum b{color:var(--blue);font-weight:600}
+.cf2-sum .cf2-b{color:var(--t1);font-weight:600}
+.cf2-after{margin-top:14px;padding:10px 14px;border-radius:4px;background:var(--head);font-size:13px;color:var(--t3)}
+.cf2-after b{color:var(--t1);font-weight:600}
+.cf2-sum .cf2-st{gap:6px;font-size:15px;font-weight:600;color:var(--t1);margin-bottom:4px}
+.cf2-sum .cf2-st small{font-size:13px;font-weight:400;color:var(--t4)}
+.cf2-card{border:1px solid var(--line);border-radius:4px;padding:14px 16px}
+.cf2-ch{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.cf2-ch b{font-size:14px;font-weight:500;color:var(--t1)}
+.cf2-ch .cnt-up{color:var(--blue);font-weight:500;font-size:14px}
+.cf2-ch .cnt{color:var(--t2);font-weight:500;font-size:14px}
+.cf2-card p{margin:6px 0 0;color:var(--t4);font-size:13px;line-height:19.5px}
+.klist{margin-top:10px;background:var(--head);border-radius:4px;padding:4px 12px;max-height:240px;overflow:auto}
+.kr{display:flex;align-items:center;gap:8px;padding:7px 0;font-size:13px;border-bottom:1px solid #e9edf2}
+.kr:last-child{border-bottom:0}
+.ktag{font-size:11px;font-weight:500;background:#fff;border:1px solid var(--line);color:var(--t3);border-radius:4px;padding:0 6px;line-height:18px;flex-shrink:0}
+.ktag.camp{background:var(--blue-soft);border-color:transparent;color:var(--blue)}
+.kn{color:var(--t2);font-weight:500;flex:1;min-width:0}
+.kv{color:var(--t4);white-space:nowrap}
+.cf2-sep{height:1px;background:var(--line);margin:4px 0}
+.cf2-warn{display:flex;gap:6px;align-items:center;background:#fff8e6;color:#9a5a00;border-radius:4px;padding:10px 12px;font-size:13px}
+.cf2-warn .ic{color:#e08a00}
+.cf2-warn{align-items:flex-start}.cf2-warn .ic{margin-top:2px}
+.cf2-em{display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--t2)}
+.cf2-em input{height:32px;padding:0 10px;border:1px solid var(--line);border-radius:6px;font-size:14px;color:var(--t1);box-shadow:inset 1px 1px 2px rgba(0,0,0,.04)}
+.cf2-em input:focus{outline:none;border-color:var(--blue-line)}
+.cf2-em input.bad{border-color:var(--red)}
+.cf2-em-err{font-size:13px;color:var(--red)}
+.cf2-em-err:empty{display:none}
+/* 프로토타입 안내 */
+.memo-btn{position:fixed;right:24px;bottom:24px;z-index:30;display:flex;align-items:center;gap:6px;height:40px;padding:0 16px;border-radius:20px;border:1px solid var(--line);background:#fff;color:var(--t2);font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.memo{position:fixed;right:24px;bottom:76px;z-index:30;width:min(460px,calc(100vw - 48px));max-height:70vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 28px rgba(0,0,0,.16);padding:16px 18px;font-size:13px;color:var(--t2);display:none}
+.memo.open{display:block}
+.memo-x{position:sticky;top:0;float:right;margin:-4px -6px 0 8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:0;border-radius:6px;background:#fff;color:var(--t3);cursor:pointer;padding:0}.memo-x:hover{background:#f1f3f5;color:var(--t1)}
+.memo h2{font-size:14px;font-weight:600;margin:0 0 6px;color:var(--t1)}
+.memo ol,.memo ul{margin:4px 0 0;padding-left:18px}.memo li{margin:3px 0}
+.cf2-same{color:var(--t1)!important;font-weight:600}
+.hl{background:none;color:var(--blue);font-weight:600;padding:0}
+.toast{position:fixed;top:66px;right:30px;width:max-content;max-width:min(400px,calc(100% - 60px));background:#2b2d2f;color:#fff;padding:12px 16px;border-radius:6px;font-size:13px;line-height:1.5;word-break:keep-all;display:none;z-index:99999;box-shadow:0 4px 12px rgba(0,0,0,.16)}
+.muted{color:var(--t4)}
+.zero{color:var(--t4)}
+@media (max-width:900px){.lnb{display:none}.content{padding:24px 16px 120px}.gnb .hide-sm{display:none}}
+/* 값·단위 셀렉트 (에어브릿지 select) */
+.vsel{display:inline-flex;align-items:center;justify-content:space-between;gap:6px;height:32px;width:92px;padding:0 8px 0 10px;border:1px solid var(--line);border-radius:6px;background:#fff;box-shadow:inset 1px 1px 2px rgba(0,0,0,.04);font-size:14px;font-weight:400;color:var(--t1);font-style:normal}
+.vsel .ic,.usel .ic{color:var(--t2)}
+.vsel.open{border-color:var(--blue-line)}
+.event-tab .vsel{width:305px}
+.usel{display:inline-flex;align-items:center;justify-content:space-between;gap:4px;height:32px;width:58px;padding:0 8px 0 10px;border:1px solid transparent;border-radius:6px;background:var(--gray);font-size:14px;font-weight:500;color:var(--t1)}
+#chMenu{position:fixed;z-index:70;background:#fff;border:1px solid #d7dce4;border-radius:6px;box-shadow:0 2px 2px rgba(0,0,0,.06),0 4px 10px rgba(0,0,0,.2);width:auto;max-height:330px;overflow:auto;display:none;padding-bottom:4px}
+#chMenu.open{display:block}
+.chsel{width:188px}
+.chsel.ph{color:var(--t4)}
+.chsel.open{border-color:var(--blue-line)}
+.sm-it.dis{color:var(--t5);cursor:default}.sm-it.dis:hover{background:#fff}
+.sm-empty{padding:10px 16px;font-size:14px;color:var(--t4)}
+#selMenu{position:fixed;z-index:70;background:#fff;border:1px solid #d7dce4;border-radius:6px;box-shadow:0 2px 2px rgba(0,0,0,.06),0 4px 10px rgba(0,0,0,.2);width:auto;max-height:330px;overflow:auto;display:none;padding-bottom:4px}
+#selMenu.open{display:block}
+.sm-search{padding:10px 10px 4px;position:sticky;top:0;background:#fff}
+.sm-search .ic{position:absolute;left:20px;top:18px;color:#b2b8bf}
+.sm-search input{width:100%;height:32px;padding:0 8px 0 30px;border:1px solid var(--line);border-radius:6px;font-size:14px;color:var(--t1)}
+.sm-search input:focus{outline:none;border-color:var(--blue-line)}
+.sm-grp{padding:10px 12px;font-size:14px;color:var(--t3)}
+.sm-it{display:block;width:100%;text-align:left;border:0;background:#fff;padding:10px 16px;font-size:14px;line-height:21px;color:var(--t1);font-weight:400}
+.sm-it:hover{background:var(--head)}
+.sm-it.sel{color:var(--blue);font-weight:500}
+.sm-it span{color:var(--t4);font-weight:400}
+.sm-err{padding:10px 12px;font-size:14px;color:#a5abb2;white-space:nowrap}
+#selMenu.unit{width:auto}
+#selMenu.unit .sm-it{padding:10px 14px}
+</style>
+<style>.proto-tag{margin-left:8px;padding:3px 8px;border-radius:4px;background:var(--blue-soft);color:var(--blue);font-size:12px;font-weight:600;white-space:nowrap}</style>
+</head>
+<body>
+<nav class="gnb">
+  <span class="it" id="gIc1"></span><span class="it" id="gIc2"></span>
+  <span class="proto-tag">AB180 사전 과제용 프로토타입</span><span class="sp"></span>
+  <span class="it hide-sm" id="gIc3"></span><span class="it hide-sm" id="gIc4"></span><span class="it hide-sm" id="gIc5"></span><span class="it hide-sm" id="gIc6"></span><span class="vl hide-sm"></span><span class="it" id="gIc7"></span>
+</nav>
+<div class="shell">
+  <aside class="lnb" id="lnb"></aside>
+  <div class="content"><div class="page">
+    <h1>기여 규칙 <span id="h1ic"></span></h1>
+    <div class="mtabs-wrap"><ul class="mtabs">
+      <li class="mtab on" data-t="install" onclick="setTab('install')">설치</li>
+      <li class="mtab" data-t="event" onclick="setTab('event')">인앱이벤트</li>
+    </ul></div>
+    <div id="view"></div>
+  </div></div>
+</div>
+
+<button class="memo-btn" onclick="$('#memo').classList.toggle('open')"><span id="memoIc"></span>프로토타입 안내</button>
+<div class="memo" id="memo">
+<button type="button" class="memo-x" id="memoX" aria-label="닫기" onclick="$('#memo').classList.remove('open')"></button>
+<h2>이렇게 해 보세요</h2>
+    <ol>
+      <li><b>요청 1 · 캠페인 한정 설정</b><br>[설치] 탭에서 [수정]을 누르고 구글 애즈 행의 [+ 캠페인]으로 "iOS 신규 유저 모집_2610"을 추가해 주세요. 클릭·확률적 모델링은 1일, 조회·확률적 모델링은 6시간으로 바꾸고, 종료일은 [1개월 뒤]를 고르고 [완료]를 누른 뒤 저장하면 됩니다. 조회를 클릭보다 짧게 둔 이유는 아래 가정에 적어 두었습니다.</li>
+      <li><b>요청 1 · 캠페인이 끝난 뒤</b><br>[설치] 탭에서 메타 애즈 행을 펼치면 나오는 "iOS 사전 등록_2609"가 종료일이 지나 중지된 예시입니다. 끝난 캠페인만 있는 채널은 접힌 채로 시작합니다. 중지된 캠페인은 채널 값을 따르고, 행은 직접 삭제할 때까지 남아 있습니다.</li>
+      <li><b>요청 2 · 인앱 이벤트별 설정</b><br>[인앱이벤트] 탭에서 [수정]을 누르고, 아래 이벤트별 설정 표 마지막 행의 [+ 이벤트 추가]로 "알람 편집 화면 진입"을 골라 1일, "구독 시작"을 골라 60일로 바꾼 뒤 저장해 주세요. 추가한 행에는 글로벌 값(30일)이 먼저 들어옵니다.</li>
+      <li><b>캠페인 기간과 이벤트별 설정이 겹칠 때</b><br>요청 2를 저장한 뒤 메타 애즈 아래 "iOS 리텐션_2609"(7일) 행과 표 위 적용 순서 문구를 비교해 보세요. 이 캠페인으로 설치한 사용자의 '구독 시작'은 60일을 따릅니다.</li>
+      <li><b>화면 조건 1 · 처음 연 마케터</b><br>표 위 세그먼트에서 [채널별 설정]과 [글로벌 값 적용]을, 옆의 [캠페인 있는 채널]을 눌러 보세요. 파란 값은 따로 바꾼 값입니다. 채널은 글로벌과, 캠페인은 소속 채널과 비교하고, 마우스를 올리면 비교한 값이 보입니다. 캠페인은 글로벌 값도 함께 보입니다. 기본 설정 행은 에어브릿지처럼 [수정]을 눌렀을 때만 보입니다. [인앱이벤트] 탭 아래 이벤트별 설정에도 [전체 이벤트 · 설정된 이벤트 · 글로벌 값 이벤트] 세그먼트가 있습니다.</li>
+      <li><b>화면 조건 2 · 7일을 14일로 늘릴 때</b><br>[설치] 탭에서 [수정]을 누르고 글로벌 클릭·디바이스 ID 매칭을 7일에서 14일로 바꾼 뒤 저장해 주세요. 확인 창에서 바뀌는 곳과 그대로 유지되는 채널·캠페인을 볼 수 있습니다.</li>
+      <li><b>왜 이렇게 설정했는지 · 메모</b><br>저장 확인 창의 블록마다 메모를 남길 수 있습니다(선택). 저장 뒤 행 오른쪽의 메모 아이콘을 누르면 작성자·시간·내용이 기록으로 보이고, [수정]으로 이어 쓸 수 있습니다. 메타 애즈 행과 그 아래 캠페인, 구매 완료 이벤트에 예시 메모가 있습니다.</li>
+    </ol>
+    <h2 style="margin-top:10px">가정</h2>
+    <ul>
+      <li>용어는 지금 에어브릿지 화면을 따랐습니다. 과제의 확정적 매칭은 '디바이스 ID 매칭', 확률적 매칭은 '확률적 모델링'으로 표시됩니다.</li>
+      <li>과제에 맞춰 룩백 윈도우와 어트리뷰션 윈도우 모두 분·시간·일·년으로 정할 수 있게 했습니다. 최대 범위는 과제에 나와 있지 않습니다. 년 단위를 고를 수 있으려면 1년을 넘어야 해서, 두 기간 모두 지금 에어브릿지 어트리뷰션 윈도우 최대치인 2년에 맞췄습니다.</li>
+      <li>요청 1의 '확률적 매칭 룩백 윈도우를 1일로'는 클릭·확률적 모델링을 1일로 바꾸는 것으로 봤습니다. 과제에 '조회보다는 클릭의 기여기간을 길게 설정한다'고 되어 있어, 조회·확률적 모델링은 기본값인 6시간으로 두었습니다.</li>
+      <li>오늘 날짜는 화면을 연 날 기준이고, 예시 캠페인의 종료일은 오늘 기준으로 "3일 뒤", "7일 전"처럼 정해져 있어 언제 열어도 같은 상태로 보입니다.</li>
+      <li>데이터는 저장되지 않아서 새로고침하면 처음 상태로 돌아갑니다.</li>
+    </ul>
+</div>
+
+<div class="bg" id="memoBg" onclick="if(event.target===this)closeMemo()"><div class="modal memo-modal" id="memoModal"></div></div>
+
+<div class="bg" id="evPickerBg" onclick="if(event.target===this)closeEvPicker()">
+  <div class="modal">
+    <button class="m-close" onclick="closeEvPicker()" id="epClose"></button>
+    <div class="m-head"><h3>이벤트 추가</h3></div>
+    <div class="m-body">
+      <div class="filters">
+        <input id="eq" placeholder="이벤트 이름 검색" oninput="renderEvPicker()">
+        <span class="selbox white"><select id="eqt" onchange="renderEvPicker()"><option value="">전체 이벤트</option><option value="cus">커스텀 이벤트</option><option value="std">스탠다드 이벤트</option></select><span class="selic ep"></span></span>
+      </div>
+      <div class="count" id="ecount"></div>
+      <div class="pickwrap"><table class="pick"><tbody id="elist"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<div class="bg" id="pickerBg" onclick="if(event.target===this)closePicker()">
+  <div class="modal">
+    <button class="m-close" onclick="closePicker()" id="pkClose"></button>
+    <div class="m-head"><h3 id="pickerTitle">캠페인 추가</h3></div>
+    <div class="m-body">
+      <div class="filters">
+        <input id="pq" placeholder="캠페인 이름 또는 ID 검색" oninput="renderPicker()">
+        <label><input type="checkbox" id="pact" onchange="renderPicker()" checked> 집행 중만</label>
+      </div>
+      <div class="count" id="pcount"></div>
+      <div class="pickwrap"><table class="pick"><tbody id="plist"></tbody></table></div>
+    </div>
+  </div>
+</div>
+<div class="bg" id="confirmBg">
+  <div class="modal cf2">
+    <button class="m-close" onclick="backToEdit()" id="cfClose"></button>
+    <div class="m-head"><h3 id="cfTitle">수정한 기여 기간 설정을 적용하겠습니까?</h3></div>
+    <div class="cf2-body" id="cfBody"></div>
+    <div class="m-foot"><button class="btn gray" onclick="backToEdit()">취소</button><button class="btn primary" id="cfSave" disabled onclick="applySave()">적용</button></div>
+  </div>
+</div>
+<div class="bg" id="leaveBg">
+  <div class="modal leave">
+    <div class="m-head"><h3>입력 중인 설정을 떠나겠습니까?</h3></div>
+    <div class="m-body">지금 떠나면 입력한 내용이 초기화됩니다.</div>
+    <div class="m-foot"><button class="btn gray" onclick="leaveCancel()">취소</button><button class="btn primary" onclick="leaveGo()">떠나기</button></div>
+  </div>
+</div>
+<div id="chMenu" onmousedown="event.stopPropagation()"></div>
+<div id="selMenu"></div>
+<div id="calPop"></div>
+<div id="tipPop"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- 아이콘 (Material 아이콘 모양을 SVG로) ---------- */
+const ICP={
+  book:'M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z',
+cal:'M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z',
+chevL:'M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z',
+expandLess:'M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z',
+edit:'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
+add:'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z',
+delete:'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z',
+restore:'M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z',
+info:'M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z',
+help:'M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z',
+expand:'M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z',
+chev:'M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z',
+made:'M9 5v2h6.59L4 18.59 5.41 20 17 8.41V15h2V5z',
+close:'M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z',
+error:'M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z',
+sub:'M19 15l-6 6-1.42-1.42L15.17 16H4V4h2v10h9.17l-3.59-3.58L13 9l6 6z',
+link:'M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z',
+bars:'M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z',
+tune:'M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z',
+gear:'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z',
+spark:'M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4z M18 15l.9 2.1L21 18l-2.1.9L18 21l-.9-2.1L15 18l2.1-.9z',
+swap:'M7.41 13.41 6 12l-4 4 4 4 1.41-1.41L5.83 17H21v-2H5.83zm9.18-2.82L18 12l4-4-4-4-1.41 1.41L18.17 7H3v2h15.17z',
+db:'M12 3C7.58 3 4 4.34 4 6v12c0 1.66 3.58 3 8 3s8-1.34 8-3V6c0-1.66-3.58-3-8-3zm6 15c-.24.47-2.43 1.5-6 1.5S6.24 18.47 6 18v-2.5c1.6.83 3.75 1.25 6 1.25s4.4-.42 6-1.25V18zm0-4.5c-.24.47-2.43 1.5-6 1.5s-5.76-1.03-6-1.5V11c1.6.83 3.75 1.25 6 1.25S16.4 11.83 18 11v2.5zM12 9.75C8.43 9.75 6.24 8.72 6 8.25V8c.24-.47 2.43-1.5 6-1.5s5.76 1.03 6 1.5v.25c-.24.47-2.43 1.5-6 1.5z',
+groups:'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z',
+widgets:'M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z',
+search:'M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z',
+person:'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z',
+update:'M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z',
+globe:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm6.93 6h-2.95a15.65 15.65 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.93 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.987 7.987 0 0 1 5.08 16zm2.95-8H5.08a7.987 7.987 0 0 1 4.33-3.56A15.65 15.65 0 0 0 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z',
+memo:'M3 10h11v2H3v-2zm0-2h11V6H3v2zm0 8h7v-2H3v2zm15.01-3.13.71-.71c.39-.39 1.02-.39 1.41 0l.71.71c.39.39.39 1.02 0 1.41l-.71.71-2.12-2.12zm-.71.71-5.3 5.3V21h2.12l5.3-5.3-2.12-2.12z'
+};
+const ic=(n,s=16,cls='')=>`<svg class="ic ${cls}" width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="${ICP[n]}"/></svg>`;
+/* ---------- 공통 ---------- */
+const UL={m:'분',h:'시간',d:'일',y:'년'}, UM={m:1,h:60,d:1440,y:525600};
+const V=(n,u)=>({n,u}); const clone=o=>JSON.parse(JSON.stringify(o));
+const fmt=v=>v.n===0?'0':`${v.n} ${UL[v.u]}`;
+const toMin=v=>v.n*UM[v.u];
+const $=s=>document.querySelector(s);
+
+/* ---------- 목업: 채널·캠페인 ---------- */
+const CHANNELS=['구글 애즈','메타 애즈','틱톡 포 비즈니스','애플 애즈','유니티 애즈','앱러빈','아이언소스','몰로코','민티그럴','카카오 모먼트',
+'네이버 성과형 디스플레이 광고','리프트오프','토스 애즈','당근 비즈니스','X 애즈','스냅챗','레딧 애즈','버즈빌','애드팝콘','텐핑',
+'모비온','크리테오','타불라','아웃브레인','인모비','팽글','비고 애즈','마이크로소프트 애즈','링크드인 애즈','핀터레스트 애즈',
+'와이더플래닛','데이블','카울리','피카플레이','애드엑스','그린피','버즐','오픈서베이 애즈','네이버 검색 광고','자사 푸시(커스텀)'];
+function rng(s){return()=>{s=(s*9301+49297)%233280;return s/233280}}
+const r=rng(7);
+const OBJ=['신규 유저 모집','복귀 유저 모집','사전 등록','결제 유저 리타게팅','이벤트 홍보','시즌 업데이트','브랜드 인지','리텐션'];
+const OS=['iOS','안드로이드','공통'];
+const W=CHANNELS.map((c,i)=>i===0?180:i===1?160:i===2?110:i<11?60:i<20?25:12);
+const ws=W.reduce((a,b)=>a+b,0);
+let CAMPS=[], cid=100000;
+CHANNELS.forEach((ch,i)=>{const n=Math.round(W[i]/ws*1499);for(let k=0;k<n;k++){const yy=24+Math.floor(r()*3),mm=1+Math.floor(r()*(yy===26?10:12));CAMPS.push({id:String(cid++),ch,name:`${OS[Math.floor(r()*3)]} ${OBJ[Math.floor(r()*OBJ.length)]}_${yy}${String(mm).padStart(2,'0')}`,active:false})}});
+CAMPS=CAMPS.slice(0,1499);
+let a=0;CAMPS.forEach(c=>{if(a<199&&r()<0.14){c.active=true;a++}});
+CAMPS.unshift({id:'200001',ch:'구글 애즈',name:'iOS 신규 유저 모집_2610',active:true,isNew:true});
+const META_EX=CAMPS.find(c=>c.ch==='메타 애즈');
+META_EX.name='iOS 리텐션_2609';META_EX.active=true;
+const META_OLD=CAMPS.filter(c=>c.ch==='메타 애즈')[1];META_OLD.name='iOS 사전 등록_2609';META_OLD.active=false;
+const campById=id=>CAMPS.find(c=>c.id===id);
+
+/* ---------- 설정 상태 ---------- */
+const LB_COLS=[{k:'cd',t:'클릭',s:'디바이스 ID 매칭'},{k:'cp',t:'클릭',s:'확률적 모델링'},{k:'vd',t:'조회',s:'디바이스 ID 매칭'},{k:'vp',t:'조회',s:'확률적 모델링'}];
+const EV_COLS=[{k:'install',t:'설치 후',s:'인앱이벤트 인정 기간'}];
+const LB=(cd,cp,vd,vp)=>({cd,cp,vd,vp});
+const _nd=new Date();const _ymd=(y,m,d)=>`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+const TODAY=_ymd(_nd.getFullYear(),_nd.getMonth(),_nd.getDate());
+const _ad=n=>{const x=new Date(_nd);x.setDate(x.getDate()+n);return _ymd(x.getFullYear(),x.getMonth(),x.getDate())};
+const _am=n=>{const x=new Date(_nd);x.setMonth(x.getMonth()+n);return _ymd(x.getFullYear(),x.getMonth(),x.getDate())};
+const ONE_MONTH=_am(1);
+const INITIAL={
+  install:{
+    global:LB(V(7,'d'),V(1,'d'),V(1,'d'),V(6,'h')),gupd:'2025-11-18',
+    channels:[
+      {ch:'구글 애즈',v:LB(V(30,'d'),V(0,'d'),V(1,'d'),V(0,'h')),upd:'2026-09-14'},
+      {ch:'메타 애즈',v:LB(V(28,'d'),V(1,'d'),V(1,'d'),V(6,'h')),upd:'2026-06-03'},
+      {ch:'틱톡 포 비즈니스',v:LB(V(7,'d'),V(1,'d'),V(1,'d'),V(0,'h')),upd:'2026-08-21'},
+      {ch:'애플 애즈',v:LB(V(30,'d'),V(0,'d'),V(0,'d'),V(0,'h')),upd:'2026-04-17'},
+      {ch:'유니티 애즈',v:LB(V(14,'d'),V(1,'d'),V(1,'d'),V(6,'h')),upd:'2026-07-09'},
+      {ch:'앱러빈',v:LB(V(7,'d'),V(1,'d'),V(1,'d'),V(1,'h')),upd:'2026-05-28'},
+      {ch:'아이언소스',v:LB(V(7,'d'),V(1,'d'),V(1,'d'),V(12,'h')),upd:'2026-03-12'},
+      {ch:'몰로코',v:LB(V(14,'d'),V(1,'d'),V(1,'d'),V(12,'h')),upd:'2026-08-04'},
+      {ch:'카카오 모먼트',v:LB(V(7,'d'),V(1,'d'),V(7,'d'),V(6,'h')),upd:'2026-02-26'},
+      {ch:'네이버 성과형 디스플레이 광고',v:LB(V(30,'d'),V(1,'d'),V(1,'d'),V(6,'h')),upd:'2026-06-30'},
+      {ch:'민티그럴',v:LB(V(3,'d'),V(1,'d'),V(1,'d'),V(6,'h')),upd:'2026-10-08'},
+      {ch:'리프트오프',v:LB(V(7,'d'),V(0,'d'),V(7,'d'),V(0,'h')),upd:'2026-01-19'},
+    ],
+    campaigns:[{id:META_OLD.id,v:LB(V(28,'d'),V(3,'d'),V(1,'d'),V(6,'h')),end:_ad(-7),upd:'2026-09-02'}],
+    memos:{'ch:메타 애즈':[{email:'minji.k@game.co.kr',time:'2026-06-03 14:12',text:'리타게팅 비중이 커서 클릭·디바이스 ID 매칭을 28일로 늘림. 분기 리뷰 때 다시 볼 것.'}],['cp:'+META_OLD.id]:[{email:'minji.k@game.co.kr',time:'2026-09-02 10:40',text:'사전 등록 캠페인이라 클릭 룩백을 길게 둠. 출시 후 종료.'},{email:'jh.park@game.co.kr',time:'2026-10-21 09:15',text:'종료일 지나 중지됨. 행은 리포트 대조 끝나면 삭제 예정.'}]} // {id, v, end(종료일)}
+  },
+  event:{
+    global:{install:V(30,'d')},gupd:'2025-11-18',
+    channels:[
+      {ch:'구글 애즈',v:{install:V(30,'d')},upd:'2026-09-14'},
+      {ch:'메타 애즈',v:{install:V(28,'d')},upd:'2026-06-03'},
+      {ch:'애플 애즈',v:{install:V(60,'d')},upd:'2026-08-21'},
+      {ch:'카카오 모먼트',v:{install:V(14,'d')},upd:'2026-04-17'},
+      {ch:'몰로코',v:{install:V(7,'d')},upd:'2026-07-09'},
+      {ch:'틱톡 포 비즈니스',v:{install:V(7,'d')},upd:'2026-05-28'},
+      {ch:'유니티 애즈',v:{install:V(14,'d')},upd:'2026-03-12'},
+      {ch:'앱러빈',v:{install:V(7,'d')},upd:'2026-08-04'},
+      {ch:'아이언소스',v:{install:V(7,'d')},upd:'2026-02-26'},
+      {ch:'네이버 성과형 디스플레이 광고',v:{install:V(14,'d')},upd:'2026-06-30'},
+      {ch:'민티그럴',v:{install:V(3,'d')},upd:'2026-10-08'},
+      {ch:'리프트오프',v:{install:V(30,'d')},upd:'2026-01-19'},
+    ],
+    campaigns:[{id:META_EX.id,v:{install:V(7,'d')},end:_ad(3),upd:'2026-09-25'}],
+    events:[ // {name, v:{install}, chs:'all'} — 요청 2(알람 편집 화면 진입, 구독 시작)는 평가자가 직접 추가
+      {name:'튜토리얼 완료',v:{install:V(1,'d')},chs:'all',upd:'2026-05-12'},
+      {name:'구매 완료',v:{install:V(14,'d')},chs:'all',upd:'2026-08-19'}
+    ],
+    memos:{'ev:구매 완료':[{email:'jh.park@game.co.kr',time:'2026-08-19 17:05',text:'구매는 설치 후 2주 안에 대부분 일어나서 14일로 줄임.'}]}
+  }
+};
+/* ---------- 목업: 인앱 이벤트 60 ---------- */
+const STD=['앱 실행','딥링크 실행','회원가입','로그인','로그아웃','홈화면 조회','상품리스트 조회','검색결과 조회','상품상세페이지 조회','결제수단 등록',
+'위시리스트 추가','장바구니 담기','결제 시작','구매 완료','구매 취소','체험판 시작','구독','구독 취소','광고 노출','광고 클릭',
+'튜토리얼 완료','레벨 달성','과제 달성','평가','공유','일정 예약','크레딧 사용']; // 헬프 센터 '에어브릿지 이벤트 종류' (앱 설치 제외)
+const CUS=['알람 편집 화면 진입','구독 시작','첫 알람 설정','알람 해제','스누즈 사용','테마 변경','위젯 추가','수면 기록 시작','수면 리포트 조회','알람음 미리듣기',
+'가챠 뽑기','스테이지 클리어','길드 가입','PVP 입장','일일 출석','보스 처치','캐릭터 강화','시즌패스 구매','친구 추가','랭킹 조회',
+'푸시 권한 허용','알림 설정 변경','프로필 수정','쿠폰 입력','이벤트 페이지 진입','설문 참여','고객센터 문의','언어 변경','다크모드 전환','백업 완료',
+'복원 완료','첫 결제 완료','데일리 미션 완료','상점 진입'];
+const EVENTS=[...STD.map(n=>({n,t:'std'})),...CUS.map(n=>({n,t:'cus'}))].slice(0,60);
+let state=clone(INITIAL);
+let ui={pzMode:'below',saveMode:'A',review:false,changes:null,email:'',emailErr:false,inhMode:'full',tab:'install',editing:false,draft:null,open:{},err:'',pickFor:null,evMode:'decided',pickOpen:null,simCh:'메타 애즈',simEv:null,baseMode:'up',v:{install:{f7:'all',cpOnly:false,open:{}},event:{f7:'all',cpOnly:false,open:{}}}};
+const TV=()=>ui.v[ui.tab];
+
+function setTab(t){if(ui.tab===t)return;if(ui.editing){ui.leaveTo=t;$('#leaveBg').classList.add('open');return}ui.tab=t;document.querySelectorAll('.mtab').forEach(b=>b.classList.toggle('on',b.dataset.t===t));render()}
+const cols=()=>ui.tab==='install'?LB_COLS:EV_COLS;
+const conf=()=>ui.editing?ui.draft:state[ui.tab];
+
+/* 값 해석: 캠페인 칸 → 채널 → 글로벌 */
+function chanRow(c,ch){return c.channels.find(x=>x.ch===ch)}
+function resolveCamp(c,camp,k){
+  if(camp.v[k]&&!isPaused(camp))return{v:camp.v[k],from:'campaign'};
+  const cr=chanRow(c,campById(camp.id).ch);
+  if(cr&&cr.v[k])return{v:cr.v[k],from:'channel',name:cr.ch};
+  return{v:c.global[k],from:'global'};
+}
+/* ---------- 4번 비교: 이어받기 방식 ---------- */
+const INH={
+  all:{label:'안 1 · 채널·캠페인 모두 칸별',desc:'채널과 캠페인 모두 바꾼 칸만 따로 갖고, 나머지 칸은 위 단계 값을 이어받아요. 새 행은 위 값을 이어받은 상태로 시작해요.'},
+  camp:{label:'안 2 · 캠페인만 칸별',desc:'채널은 지금 에어브릿지처럼 네 칸을 모두 직접 입력해요(새 채널 행은 0으로 시작). 캠페인만 바꾼 칸을 따로 갖고 나머지는 이어받아요.'},
+  full:{label:'안 3 · 캠페인도 통째로 (결정)',desc:'채널과 캠페인 모두 행을 만들면 네 칸을 모두 직접 갖고, 위 단계 값이 바뀌어도 따라가지 않아요. 캠페인을 추가하면 그 순간의 값이 복사돼요.'}
+};
+const ZERO=g=>Object.fromEntries(Object.keys(g).map(k=>[k,V(0,g[k].u)]));
+function setInh(m){
+  if(ui.editing){toast('수정 중에는 방식을 바꿀 수 없어요. 저장하거나 취소해 주세요.');return}
+  ['install','event'].forEach(t=>{
+    const c=state[t];
+    if(m!=='all')c.channels.forEach(ch=>Object.keys(c.global).forEach(k=>{if(!ch.v[k])ch.v[k]=clone(c.global[k])}));
+    if(m==='full')c.campaigns.forEach(cp=>Object.keys(c.global).forEach(k=>{if(!cp.v[k])cp.v[k]=clone(resolveCamp(c,cp,k).v)}));
+  });
+  ui.inhMode=m;render();
+}
+function chanCell(c,idx,k){
+  const row=c.channels[idx], own=row.v[k], m=ui.inhMode;
+  if(ui.editing){
+    if(own)return `<td>${editInputs('ch',idx,k,own)}${liveHint('ch',idx,k,own)}${m==='all'?`<button class="reset" title="글로벌 값 따르기" onclick="resetChan(${idx},'${k}')">↺ 따르기</button>`:''}</td>`;
+    return `<td><button class="inh-btn" onclick="overrideChan(${idx},'${k}')">${fmt(c.global[k])} · 글로벌 따름</button></td>`;
+  }
+  if(own)return cellMark(own,c.global[k],'글로벌');
+  return `<td class="same">${fmt(c.global[k])}</td>`;
+}
+function overrideChan(i,k){ui.draft.channels[i].v[k]=clone(ui.draft.global[k]);render()}
+function resetChan(i,k){delete ui.draft.channels[i].v[k];render()}
+
+/* ---------- 렌더 ---------- */
+const SAVE_MODES={A:'A · 확인 창',B:'B · 확인 창 + 편집 중 알림',C:'C · 변경 내역 화면'};
+function setSaveMode(m){if(ui.editing){toast('수정 중에는 방식을 바꿀 수 없어요. 저장하거나 취소해 주세요.');return}ui.saveMode=m;render()}
+/* ---------- 이벤트별 설정: 결정안 / 시안 1 / 시안 2 ---------- */
+const EV_MODES={
+  decided:{label:'결정안 · 앱 전체만',desc:'채널을 고르지 않아요. 이벤트별로 정한 기간은 모든 채널에 똑같이 적용돼요.'},
+  one:{label:'시안 1 · 채널 선택, 같은 이벤트는 한 행만',desc:'행마다 적용 채널을 고를 수 있어요. 같은 이벤트는 한 번만 넣을 수 있어요.'},
+  multi:{label:'시안 2 · 채널 선택, 같은 이벤트 여러 행',desc:'같은 이벤트를 여러 행으로 넣고 채널마다 기간을 다르게 할 수 있어요. 채널은 행끼리 겹칠 수 없어요.'}
+};
+const RULES={
+  decided:'이벤트별로 정한 기간은 어느 채널·캠페인으로 설치한 사용자든 똑같이 적용됩니다. 위 표의 채널·캠페인 기간은 따로 정하지 않은 나머지 이벤트에 적용됩니다.',
+  one:'이벤트별로 정한 기간은 적용 채널로 설치한 사용자에게만 적용돼요. 적용 채널이 아닌 채널은 위 표의 기간을 따라요. "전체"는 앞으로 추가될 채널도 포함해요.',
+  multi:'이벤트별로 정한 기간은 적용 채널로 설치한 사용자에게만 적용돼요. 같은 이벤트에 "전체" 행과 채널을 고른 행이 같이 있으면 채널을 고른 행이 먼저 적용돼요. 어느 행에도 해당하지 않는 채널은 위 표의 기간을 따라요.'
+};
+function chsLabel(e,all){
+  if(e.chs==='all'){
+    if(ui.evMode==='multi'){
+      const ex=all.filter(o=>o!==e&&o.name===e.name&&o.chs!=='all').flatMap(o=>o.chs);
+      return ex.length?`전체 <span class="ch-ex">(${ex.join(', ')} 제외 — 다른 행 적용)</span>`:'전체';
+    }
+    return '전체';
+  }
+  if(!e.chs.length)return '<span class="zero">선택 안 함</span>';
+  return e.chs.length<=2?e.chs.join(', '):`${e.chs.slice(0,2).join(', ')} 외 ${e.chs.length-2}`;
+}
+function chPicker(c,e,i){
+  const m=ui.evMode;
+  const others=c.events.filter((o,j)=>j!==i&&o.name===e.name);
+  const otherAll=others.find(o=>o.chs==='all');
+  const usedBy={};others.forEach(o=>{if(o.chs!=='all')o.chs.forEach(ch=>usedBy[ch]=o)});
+  const isAll=e.chs==='all';
+  let h=`<div class="picker"><label class="all ${otherAll?'dis':''}"><input type="checkbox" ${isAll?'checked':''} ${otherAll?'disabled':''} onchange="setAll(${i},this.checked)"> <b>전체</b> <span class="hint">${otherAll?`이미 ${fmt(otherAll.v.install)} 행이 전체로 쓰고 있어요`:'지금 있는 채널과 앞으로 추가될 채널 모두'}</span></label>`;
+  if(!isAll&&m==='one')h+=`<div class="warn">체크한 채널에만 적용돼요. 나중에 새 채널이 생기면 자동으로 포함되지 않아요.</div>`;
+  h+=`<div class="chgrid">`+CHANNELS.map(ch=>{
+    const u=usedBy[ch];
+    const checked=isAll||(!isAll&&e.chs.includes(ch));
+    const dis=isAll||!!u;
+    return `<label class="${dis?'dis':''}"><input type="checkbox" ${checked&&!u?'checked':''} ${dis?'disabled':''} onchange="togCh(${i},'${ch}',this.checked)"> ${ch}${u?`<span class="used">${fmt(u.v.install)} 행에서 사용 중</span>`:''}</label>`;
+  }).join('')+`</div><div class="picker-foot"><button class="btn sm" onclick="togPick(${i})">닫기</button></div></div>`;
+  return h;
+}
+const DEF={install:LB(V(7,'d'),V(1,'d'),V(1,'d'),V(6,'h')),event:{install:V(30,'d')}};
+const UPD=TODAY;
+/* 6번: 종료일이 지나면 중지 (지난 뒤 들어오는 데이터부터 채널 값) */
+const isPaused=cp=>!!cp.end&&cp.end<TODAY;
+const dLeft=cp=>cp.end?Math.round((new Date(cp.end)-new Date(TODAY))/864e5):null;
+function setEnd(ci,v){ui.draft.campaigns[ci].end=v||null;render()}
+function chart(c){
+  const ed=ui.editing?`<div class="editing">수정 중</div>`:'';
+  if(ui.tab==='install'){
+    const g=c.global, cm=toMin(g.cd), vm=toMin(g.vd), mx=Math.max(cm,vm,1);
+    const L=12, R=7, span=100-L-R; // %
+    const w=m=>m?Math.max(14,m/mx*span):0;
+    const cw=w(cm), vw=w(vm), cx=100-R-cw, vx=100-R-vw;
+    let h=`<div class="chart"><div class="axis"></div><div class="vline" style="left:${100-R}%"></div>`;
+    if(cw)h+=`<div class="bar click" style="left:${cx}%;width:${cw}%;top:67px"></div><div class="mk" style="left:${cx}%"></div><div class="lb" style="left:${cx}%">클릭(${fmt(g.cd).replace(' ','')})</div>`;
+    if(vw)h+=`<div class="bar view" style="left:${vx}%;width:${vw}%;top:86px"></div><div class="mk" style="left:${vx}%"></div><div class="lb" style="left:${vx}%">조회(${fmt(g.vd).replace(' ','')})</div>`;
+    h+=`<div class="lb l" style="left:12px">터치포인트</div><div class="lb r" style="left:calc(100% - 12px)">설치</div>${ed}</div>`;
+    return h;
+  }
+  const g=c.global.install, x=80;
+  return `<div class="chart"><div class="axis"></div><div class="vline" style="left:9%"></div>
+    <div class="bar ev" style="left:9%;width:${x-9}%;top:40px"></div><div class="mk g" style="left:${x}%"></div>
+    <div class="lb" style="left:9%">설치</div><div class="lb" style="left:${x}%">인앱이벤트(${fmt(g).replace(' ','')})</div><div class="lb r" style="left:calc(100% - 12px)">측정 대상 제외</div>${ed}</div>`;
+}
+function render(){
+  const c=conf(), isLB=ui.tab==='install';
+  let h=isLB
+    ?`<p class="desc">설치 이벤트에 대한 룩백 윈도우를 터치포인트 종류와 유저 식별 방법에 따라 설정할 수 있습니다. 룩백 윈도우는 채널에서 발생한 클릭, 조회가 설치 이벤트와 관련 있다고 판단되는 기간입니다. <a class="guide">${ic('globe',16)}가이드 보러가기</a></p>`
+    :`<p class="desc">타겟 이벤트인 설치, 딥링크 실행, 딥링크 페이지뷰에 대한 어트리뷰션 윈도우를 설정할 수 있습니다. 어트리뷰션 윈도우는 타겟 이벤트 후에 발생한 전환인 인앱이벤트가 타겟 이벤트와 관련 있다고 판단되는 기간입니다. 이때 어떤 인앱이벤트가 여러 타겟 이벤트의 어트리뷰션 윈도우에 있으면 가장 최근에 발생한 타겟 이벤트에 기여한 채널의 성과로 측정됩니다. <a class="guide">${ic('globe',16)}가이드 보러가기</a></p>
+      <div class="subtab"><button class="on">설치</button><button onclick="toast('이 프로토타입은 타겟 이벤트 설치만 다뤄요.')">딥링크 실행</button><button onclick="toast('이 프로토타입은 타겟 이벤트 설치만 다뤄요.')">딥링크 페이지뷰</button></div>`;
+  h+=`<div class="sec-h"><div class="sec-t"><span>${isLB?'룩백 윈도우':'설치에 대한 어트리뷰션 윈도우'}</span>${ic('info',16)}${isLB?'<span class="sec-sub">아래 차트는 유저 식별 방법 중에 [디바이스 ID 매칭]을 기준으로 표시합니다.</span>':''}</div>${ui.editing?'':`<button class="btn outline" onclick="startEdit()">${ic('edit',16)}수정</button>`}</div>`;
+  h+=chart(c);
+  if(!ui.editing)h+=sum7(c);
+  h+=`<div class="info-box rule-box">${ic('info',16)}<span><b>적용 순서</b>광고를 보고 설치한 사람은 그 광고가 속한 캠페인 행의 기간을 씁니다. 캠페인 행이 없으면 채널 행의 기간을, 채널 행도 없으면 글로벌 기간을 씁니다.${isLB?'':c.events&&c.events.length?`<br>단, 이벤트별 설정이 있는 이벤트(${[...new Set(c.events.map(e=>e.name))].join(', ')})는 이 표를 보지 않고, 아래 이벤트별 설정의 기간을 씁니다.`:'<br>단, 아래 이벤트별 설정에 추가한 이벤트는 이 표를 보지 않고, 이벤트별 설정의 기간을 씁니다.'}</span></div>`;
+  h+=`<div class="table-wrap ${isLB?'':'event-tab'} ${ui.editing?'editing':''}"><table><thead><tr><th style="min-width:260px">채널</th>`;
+  cols().forEach(k=>h+=isLB?`<th><p>${k.t}</p><p>${k.s}</p></th>`:`<th>설치</th>`);
+  h+=ui.editing?`<th></th></tr></thead><tbody>`:`<th class="th-upd">최근 수정일</th><th class="th-memo"></th></tr></thead><tbody>`;
+  const F=ui.editing?'all':TV().f7;
+  if(ui.editing)h+=`<tr class="default"><td><span class="cn">기본 설정 <span class="tip" data-tip="에어브릿지에서 기본으로 제공하는 설정입니다.">${ic('info',14,'inf')}</span></span></td>${cols().map(k=>`<td>${fmt(DEF[ui.tab][k.k])}</td>`).join('')}<td></td></tr>`;
+  h+=`<tr class="global"><td><span class="cn">글로벌 <span class="tip" data-tip="기여 기간을 별도로 설정한 채널과 캠페인을 제외한 모든 채널과 캠페인에 적용됩니다.">${ic('info',14,'inf')}</span></span></td>${cols().map(k=>ui.editing?cellPlain(c.global[k.k],'own',null,'global',null,k.k):cellPlain(c.global[k.k])).join('')}${ui.editing?`<td class="act"><div class="wrap">${memoBtn('g')}<span class="ic-btn dis" title="기본 설정으로 되돌리기">${ic('restore',16)}</span></div></td>`:`<td class="upd">${c.gupd||UPD}${ic('made',14)}</td><td class="mcol">${memoBtn('g')}</td>`}</tr>`;
+  const groups=[...c.channels.map(x=>({ch:x.ch,row:x}))];
+  c.campaigns.forEach(cp=>{const ch=campById(cp.id).ch;if(!groups.find(g=>g.ch===ch))groups.push({ch,row:null})});
+  groups.forEach(g=>{
+    const camps=c.campaigns.filter(cp=>campById(cp.id).ch===g.ch);
+    if(F==='none'&&g.row)return;
+    if(F==='diff'&&!(g.row&&rowDiffDef(g.row)))return;
+    if(cpEff(c)&&!ui.editing&&!camps.length)return;
+    const showCamps=true;
+    const nStop=camps.filter(isPaused).length, nSoon=camps.filter(cp=>!isPaused(cp)&&dLeft(cp)!==null&&dLeft(cp)<=3).length;
+    const stTags=nStop?`<span class="tag stop">중지 ${nStop}</span>`:'';
+    if(TV().open[g.ch]===undefined&&camps.length)TV().open[g.ch]=camps.some(cp=>!isPaused(cp));
+    const open=TV().open[g.ch]===true;
+    const tg=camps.length?`<button class="toggle" onclick="tog('${g.ch}')">${ic(open?'expand':'chev',16)}</button>`:'';
+    if(g.row){
+      const idx=c.channels.indexOf(g.row);
+      h+=`<tr class="chan"><td>${tg}${g.row.isNew&&ui.editing?chanSelect(idx):g.ch}${g.ch==='구글 애즈'&&ui.tab==='install'?` <span class="tip" data-tip="사전 등록 유도 앱 캠페인의 룩백 윈도우는 90일입니다. 이 룩백 윈도우는 대시보드에서 확인하거나 수정할 수 없습니다. 담당 매니저에게 문의해 주세요." data-link="1">${ic('info',14,'inf')}</span>`:''}${camps.length?`<span class="tag cnt">캠페인 ${camps.length}</span>`:''}${stTags}</td>`;
+      h+=cols().map(k=>chanCell(c,idx,k.k)).join('');
+      h+=ui.editing?`<td class="act"><div class="wrap">${g.row.isNew?'':`<button class="btn outline sm" onclick="openPicker('${g.ch}')">${ic('add',14)}캠페인</button>`}${g.row.isNew?'':memoBtn('ch:'+g.ch)}<button class="ic-btn" title="채널 설정 삭제" onclick="delChan(${idx})">${ic('delete',16)}</button></div></td>`:`<td class="upd">${g.row.upd||UPD}${ic('made',14)}</td><td class="mcol">${memoBtn('ch:'+g.ch)}</td>`;
+      h+=`</tr>`;
+    }else{
+      h+=`<tr class="chan virtual"><td>${tg}${g.ch}<span class="tag cnt">채널 설정 없음</span>${stTags}</td>${cols().map(k=>`<td>${fmt(c.global[k.k])}</td>`).join('')}<td class="act">${ui.editing?`<div class="wrap"><button class="btn outline sm" onclick="openPicker('${g.ch}')">${ic('add',14)}캠페인</button></div>`:''}</td></tr>`;
+    }
+    if(open&&showCamps)camps.forEach(cp=>{
+      const m=campById(cp.id), ci=c.campaigns.indexOf(cp);
+      const pz=isPaused(cp), dl=dLeft(cp);
+      const st=pz?`<span class="tag stop">중지됨</span>${ui.pzMode==='icon'?` <span class="tip" data-tip="${ui.editing?'종료일이 지나 중지된 설정입니다. 다시 쓰려면 종료일을 바꾸고, 필요 없으면 삭제해 주세요.':'종료일이 지나 중지된 설정입니다. 지금은 채널 값이 적용됩니다.'}">${ic('info',14,'inf')}</span>`:''}`:(dl!==null&&dl<=3?`<span class="tag soon">D-${dl}</span>`:'');
+      let meta;
+      if(ui.editing){
+        meta=`<span class="endf"><button type="button" class="cal-trig ${cp.end?'':'empty'}" data-cal="${ci}" onclick="openCal(event,${ci})">${ic('cal',14)}${cp.end?`종료일 ${cp.end}`:'종료일 없음'}${ic('expand',14)}</button></span>${pz&&ui.pzMode==='line'?`<span class="endhint">종료일을 바꾸면 다시 적용돼요</span>`:''}`;
+      }else{
+        meta=cp.end?`<span class="meta">${pz?`${cp.end} 종료`:`${cp.end}까지`}</span>`:'';
+      }
+      const pzb=pz&&ui.editing&&ui.pzMode==='below';
+      h+=`<tr class="camp ${pz?'paused':''} ${ui.editing?'':'view'} ${pzb?'haspz':''}"><td><div class="camp-name">${ic('sub',14)}<span><span class="nm">${m.name}</span>${m.active?'<span class="tag on">집행 중</span>':''}${st}${meta}</span></div></td>`;
+      cols().forEach((k,ki)=>{
+        const res=resolveCamp(c,cp,k.k);
+        const hint=pzb&&ki===0?`<div class="pzhint">종료일이 지나 중지된 설정입니다. 다시 쓰려면 종료일을 바꾸고, 필요 없으면 삭제해 주세요.</div>`:'';
+        if(ui.editing){
+          h+=(res.from==='campaign'||cp.v[k.k])
+            ?`<td class="${hint?'pzcell':''}">${editInputs('camp',ci,k.k,cp.v[k.k])}${hint}${ui.inhMode==='full'?'':`<button class="reset" onclick="resetCamp(${ci},'${k.k}')">따르기</button>`}</td>`
+            :`<td><button class="inh-btn" onclick="overrideCamp(${ci},'${k.k}')">${fmt(res.v)} · ${res.from==='channel'?'채널':'글로벌'} 따름</button></td>`;
+        }else{
+          h+=isPaused(cp)&&cp.v[k.k]?(sameV(cp.v[k.k],res.v)?`<td class="same">${vtxt(res.v)}</td>`:`<td class="pz"><span class="old">${vtxt(cp.v[k.k])}</span><span class="now">${vtxt(res.v)} (${res.from==='channel'?'채널':'글로벌'})</span></td>`):res.from==='campaign'?cellMark(cp.v[k.k],baseCamp(c,cp,k.k),baseName(c,cp),c.global[k.k]):`<td class="same">${fmt(res.v)} (${res.from==='channel'?'채널':'글로벌'})</td>`;
+        }
+      });
+      h+=ui.editing?`<td class="act"><div class="wrap">${memoBtn('cp:'+cp.id)}<button class="ic-btn" title="캠페인 설정 삭제" onclick="delCamp(${ci})">${ic('delete',16)}</button></div></td>`:`<td class="upd">${cp.upd||UPD}${ic('made',14)}</td><td class="mcol">${memoBtn('cp:'+cp.id)}</td>`;
+      h+=`</tr>`;
+    });
+  });
+  if(!ui.editing&&(F==='all'||F==='none'||F==='ev')&&!cpEff(c)){
+    const shown=new Set(groups.map(g=>g.ch));
+    CHANNELS.filter(ch=>!shown.has(ch)).forEach(ch=>{
+      h+=`<tr class="chan follow"><td>${ch}</td>${cols().map(k=>`<td class="same ${c.global[k.k].n===0?'zero':''}">${c.global[k.k].n===0?'기여하지 않음':fmt(c.global[k.k])}</td>`).join('')}<td class="upd follow-upd">—</td><td class="mcol"></td></tr>`;
+    });
+  }
+  h+=`</tbody></table></div>`;
+  if(ui.editing){
+    const dirty=JSON.stringify(ui.draft)!==JSON.stringify(state[ui.tab]);
+    h+=`<div class="actions"><div class="l"><button class="btn outline" onclick="addChan()">${ic('add',16)}추가</button></div>${isLB?`<div class="r">${saveBtns(dirty)}</div>`:''}</div>`;
+    if(isLB&&ui.err)h+=`<div class="err">${ui.err}</div>`;
+  }
+  if(!isLB)h+=renderEvents(c);
+  if(!isLB&&ui.editing){h+=`<div class="actions end"><div class="l"></div><div class="r">${saveBtns(JSON.stringify(ui.draft)!==JSON.stringify(state[ui.tab]))}</div></div>`;if(ui.err)h+=`<div class="err">${ui.err}</div>`;}
+  if(isLB)h+=asisBoxes();
+  $('#view').innerHTML=h;
+}
+function asisBoxes(){
+  const box=(title,help,lis,upd)=>`<div class="asbox"><div class="asbox-h"><div class="asbox-t"><p>${title}</p>${help?`<span class="tip" data-tip="${help}">${ic('help',16,'inf')}</span>`:''}<button type="button" class="tg" aria-pressed="false" onclick="toast('프로토타입에서는 토글을 바꿀 수 없어요.')"><span></span></button></div><a class="btn gray sm2">${ic('book',14)}가이드 보러가기</a></div><ul>${lis.map(x=>`<li>${x}</li>`).join('')}</ul>${upd?`<div class="asbox-f"><span>최근 수정일</span><span>-</span><span>-</span></div>`:''}</div>`;
+  return box('CTV 조회 우선순위를 클릭과 동일하게 적용','CTV 조회를 모바일 클릭과 같은 우선순위로 볼지 정합니다.',['CTV 조회의 기여 우선순위를 모바일 클릭과 동일하게 할지 선택할 수 있습니다. CTV 캠페인 운영 시 성과 측정에서 CTV 조회 우선순위를 높이려면 토글을 활성화하세요.','CTV 캠페인을 지원하는 광고 채널에 일괄 적용됩니다. 전체 채널 목록은 가이드를 참고하세요.'],true)
+    +box('딥링크 UTM 어트리뷰션','',['딥링크의 utm_source도 기여 채널 후보에 포함하려면 토글을 활성화하세요.','트래킹 링크, SAN API, 또는 URL 쿼리 매핑으로 확인된 채널이 있으면 그 채널이 utm_source보다 우선합니다.'],false);
+}
+function saveBtns(dirty){return `<button class="btn gray w130" onclick="cancelEdit()">취소</button><button class="btn primary w130" ${dirty?'':'disabled'} onclick="save()">저장</button>`}
+function renderEvents(c){
+  const m=ui.evMode, showCh=m!=='decided';
+  let h=`<div class="evbox"><div class="sec-h"><div class="sec-t"><span>이벤트별 설정</span>${ic('info',16)}<span class="sec-sub">특정 인앱이벤트만 설치에 대한 어트리뷰션 윈도우를 다르게 정합니다.</span></div></div>`;
+  const own=new Set(c.events.map(e=>e.name)), rest=EVENTS.filter(e=>!own.has(e.n));
+  const F2=ui.editing?'own':(ui.evF||'all');
+  if(!ui.editing){
+    const tab=(f,t,n)=>`<button type="button" class="${F2===f?'on':''}" onclick="ui.evF='${f}';render()">${t}<span class="n">${n}</span></button>`;
+    h+=`<div class="f7 evf7"><div class="f7top"><div class="seg">${tab('all','전체 이벤트',EVENTS.length)}${tab('own','설정된 이벤트',c.events.length)}${tab('rest','글로벌 값 이벤트',rest.length)}</div></div></div>`;
+  }
+  h+=`<div class="table-wrap event-tab"><table class="evtable"><thead><tr><th style="min-width:260px">인앱이벤트</th><th>설치</th>${showCh?'<th>적용 채널</th>':''}${ui.editing?'<th></th>':'<th class="th-upd">최근 수정일</th><th class="th-memo"></th>'}</tr></thead><tbody>`;
+  if(!ui.editing)h+=`<tr class="global"><td><span class="cn">글로벌 <span class="tip" data-tip="기여 기간을 별도로 설정한 이벤트를 제외한 모든 인앱이벤트에 적용됩니다.">${ic('info',14,'inf')}</span></span></td>${cellPlain(c.global.install)}${showCh?'<td></td>':''}<td class="upd">${c.gupd||UPD}${ic('made',14)}</td><td class="mcol">${memoBtn('g')}</td></tr>`;
+  const restRow=e=>`<tr class="rest"><td>${e.n}<span class="tag ${e.t==='std'?'std':'cus'}">${e.t==='std'?'스탠다드':'커스텀'}</span></td><td class="same">${fmt(c.global.install)}</td>${showCh?'<td></td>':''}<td class="upd follow-upd">—</td><td class="mcol"></td></tr>`;
+  if(F2==='all'){
+    c.events.forEach(e=>{const meta=EVENTS.find(x=>x.n===e.name), std=meta&&meta.t==='std';h+=`<tr><td>${e.name}<span class="tag ${std?'std':'cus'}">${std?'스탠다드':'커스텀'}</span></td><td class="dif"><span class="tip" data-tip="글로벌: ${vtxt(c.global.install)}">${e.v.install.n===0?'기여하지 않음':fmt(e.v.install)}</span></td>${showCh?'<td></td>':''}<td class="upd">${e.upd||UPD}${ic('made',14)}</td><td class="mcol">${memoBtn('ev:'+e.name)}</td></tr>`});
+    rest.forEach(e=>{h+=restRow(e)});
+    h+=`</tbody></table></div><div class="info-box">${ic('info',16)}<span>따로 정한 이벤트는 파란 값으로 위에, 나머지는 글로벌 값(${fmt(c.global.install)})으로 아래에 있습니다. 채널 행이나 캠페인 행이 있는 곳으로 설치한 사용자에게는 그 행의 기간이 대신 적용됩니다.</span></div></div>`;
+    return h;
+  }
+  if(F2==='rest'){
+    rest.forEach(e=>{h+=restRow(e)});
+    h+=`</tbody></table></div><div class="info-box">${ic('info',16)}<span>이 이벤트들은 따로 정한 기간이 없어서 위 표를 따릅니다. 글로벌 ${fmt(c.global.install)}이 기본이고, 채널 행이나 캠페인 행이 있는 곳으로 설치한 사용자에게는 그 행의 기간이 대신 적용됩니다. 다르게 정하려면 [수정]에서 이벤트별 설정에 추가해 주세요.</span></div></div>`;
+    return h;
+  }
+  if(!c.events.length&&!ui.editing)h+=`<tr><td colspan="${showCh?5:4}" class="ev-empty">따로 정한 이벤트가 없습니다. 모든 인앱이벤트가 위 표의 기간을 따릅니다.</td></tr>`;
+  c.events.forEach((e,i)=>{
+    const meta=EVENTS.find(x=>x.n===e.name), std=meta&&meta.t==='std';
+    h+=`<tr><td>${e.name}<span class="tag ${std?'std':'cus'}">${std?'스탠다드':'커스텀'}</span></td>
+      ${ui.editing?`<td>${editInputs('ev',i,'install',e.v.install)}</td>`:`<td class="dif"><span class="tip" data-tip="글로벌: ${vtxt(c.global.install)}">${e.v.install.n===0?'기여하지 않음':fmt(e.v.install)}</span></td>`}
+      ${showCh?`<td>${ui.editing?`<button class="ch-btn" onclick="togPick(${i})">${chsLabel(e,c.events)}</button>`:chsLabel(e,c.events)}</td>`:''}
+      ${ui.editing?`<td class="act"><div class="wrap">${memoBtn('ev:'+e.name)}<button class="ic-btn" title="삭제" onclick="delEv(${i})">${ic('delete',16)}</button></div></td>`:`<td class="upd">${e.upd||UPD}${ic('made',14)}</td><td class="mcol">${memoBtn('ev:'+e.name)}</td>`}</tr>`;
+    if(ui.editing&&showCh&&ui.pickOpen===i)h+=`<tr class="pickrow"><td colspan="4">${chPicker(c,e,i)}</td></tr>`;
+  });
+  if(ui.editing)h+=`<tr class="ev-add-row"><td colspan="${showCh?4:3}"><button class="btn outline" onclick="openEvPicker()">${ic('add',16)}이벤트 추가</button></td></tr>`;
+  h+=`</tbody></table></div>`;
+  if(m==='decided')h+=`<div class="info-box">${ic('info',16)}<span><b>적용 규칙</b>${RULES[m]} 이벤트별 설정은 앱 전체에만 적용됩니다. 채널·캠페인마다 이벤트 기간을 다르게 하려면 담당 매니저에게 문의해 주세요.</span></div>`;
+  else h+=`<div class="info-box">${ic('info',16)}<span><b>적용 규칙</b>${RULES[m]}</span></div>`;
+  h+=`</div>`;
+  return h;
+}
+function simulator(c){
+  const evNames=[...new Set(c.events.map(e=>e.name))];
+  if(!evNames.length)return '';
+  const ch=ui.simCh||'메타 애즈', ev=evNames.includes(ui.simEv)?ui.simEv:evNames[0];
+  const r=resolveEv(c,ch,ev);
+  return `<div class="sim"><b>적용 결과 확인</b>
+    <span class="selbox white"><select onchange="ui.simCh=this.value;render()">${CHANNELS.map(x=>`<option ${x===ch?'selected':''}>${x}</option>`).join('')}</select>${ic('expand',16)}</span> 로 설치한 사용자의
+    <span class="selbox white"><select onchange="ui.simEv=this.value;render()">${evNames.map(x=>`<option ${x===ev?'selected':''}>${x}</option>`).join('')}</select>${ic('expand',16)}</span> →
+    <span class="sim-r">${fmt(r.v)}</span> <span class="sim-from">${r.from}</span></div>`;
+}
+
+function resolveEv(c,ch,ev){
+  const rows=c.events.filter(e=>e.name===ev);
+  if(ui.evMode!=='decided'){
+    const sp=rows.find(e=>e.chs!=='all'&&e.chs.includes(ch));
+    if(sp)return{v:sp.v.install,from:`이벤트별 설정 · ${ch} 선택 행`};
+  }
+  const all=rows.find(e=>ui.evMode==='decided'||e.chs==='all');
+  if(all)return{v:all.v.install,from:'이벤트별 설정 · 전체 행'};
+  const cr=c.channels.find(x=>x.ch===ch);
+  if(cr)return{v:cr.v.install,from:'위 표 · 채널 값 (캠페인 값이 있으면 캠페인 값)'};
+  return{v:c.global.install,from:'위 표 · 글로벌 값 (캠페인 값이 있으면 캠페인 값)'};
+}
+function setEvMode(m){
+  const fix=list=>{
+    if(m!=='multi'){const seen=new Set();const out=[];list.forEach(e=>{if(!seen.has(e.name)){seen.add(e.name);out.push(e)}});list.length=0;out.forEach(e=>list.push(e))}
+    if(m==='decided')list.forEach(e=>e.chs='all');
+  };
+  fix(state.event.events);if(ui.draft&&ui.draft.events)fix(ui.draft.events);
+  ui.evMode=m;ui.pickOpen=null;render();
+}
+function togPick(i){ui.pickOpen=ui.pickOpen===i?null:i;render()}
+function setAll(i,on){ui.draft.events[i].chs=on?'all':[];render()}
+function togCh(i,ch,on){const e=ui.draft.events[i];if(e.chs==='all')return;if(on){if(!e.chs.includes(ch))e.chs.push(ch)}else e.chs=e.chs.filter(x=>x!==ch);render()}
+function addEv(name){
+  if(!name)return;
+  const hasAll=ui.draft.events.some(e=>e.name===name&&e.chs==='all');
+  ui.draft.events.push({name,v:{install:clone(ui.draft.global.install)},chs:(ui.evMode==='multi'&&hasAll)?[]:'all'});
+  if(ui.evMode!=='decided'&&ui.evMode==='multi'&&hasAll)ui.pickOpen=ui.draft.events.length-1;
+  render();
+}
+function delEv(i){ui.draft.events.splice(i,1);ui.pickOpen=null;render()}
+/* ---------- 7번: 기본값과 다른 곳 표시 ---------- */
+const sameV=(a,b)=>toMin(a)===toMin(b);
+function baseCamp(c,cp,k){const r=c.channels.find(x=>x.ch===campById(cp.id).ch);return r&&r.v[k]?r.v[k]:c.global[k]}
+const vtxt=v=>v.n===0?'기여하지 않음':fmt(v);
+function baseName(c,cp){const ch=campById(cp.id).ch;return c.channels.some(x=>x.ch===ch)?ch:'글로벌'}
+function cellMark(v,b,bn,g){const d=!sameV(v,b);return d?`<td class="dif"><span class="tip" data-tip="${bn}: ${vtxt(b)}${g&&bn!=='글로벌'?`<br>글로벌: ${vtxt(g)}`:''}">${vtxt(v)}</span></td>`:`<td class="same ${v.n===0?'zero':''}">${vtxt(v)}</td>`}
+function setBase(m){ui.baseMode=m;render()}
+function cpChList(c){return [...new Set(c.campaigns.map(cp=>campById(cp.id).ch))].filter(ch=>{const r=c.channels.find(x=>x.ch===ch);return TV().f7==='all'?true:TV().f7==='diff'?(r&&rowDiffDef(r)):!r})}
+const cpEff=c=>TV().cpOnly&&cpChList(c).length>0;
+function setCpOnly(v){TV().cpOnly=v;if(v)state[ui.tab].campaigns.forEach(cp=>TV().open[campById(cp.id).ch]=true);render()}
+function setF7(f){TV().f7=f;render();if(f==='ev'){const e=document.querySelector('.evbox');if(e){e.scrollIntoView({behavior:'smooth',block:'start'});e.classList.add('flash');setTimeout(()=>e.classList.remove('flash'),1600)}}}
+const gDiffDef=c=>false;
+const rowDiffDef=r=>!!r&&cols().some(x=>r.v[x.k]);
+const cpDiffDef=cp=>!isPaused(cp)&&rowDiffDef(cp);
+function sum7(c){
+  const gD=gDiffDef(c), chD=c.channels.filter(r=>r.ch&&rowDiffDef(r)).length, cpN=c.campaigns.filter(cp=>{const r=c.channels.find(x=>x.ch===campById(cp.id).ch);return r&&rowDiffDef(r)}).length;
+  const none=CHANNELS.length-c.channels.filter(x=>x.ch).length;
+  const diffN=chD;
+  const tab=(f,t,n)=>`<button type="button" class="${TV().f7===f?'on':''}" onclick="setF7('${f}')">${t}<span class="n">${n}</span></button>`;
+  let h=`<div class="f7"><div class="f7top"><div class="seg">`;
+  h+=tab('all','채널 전체',CHANNELS.length)+tab('diff','채널별 설정',diffN)+tab('none','글로벌 값 적용',none);
+  const cpChN=cpChList(c).length;
+  h+=`</div>`;
+  h+=`<label class="cpo${cpChN?'':' dis'}"><input type="checkbox" ${cpChN&&TV().cpOnly?'checked':''} ${cpChN?'':'disabled'} onchange="setCpOnly(this.checked)">캠페인 있는 채널<span class="n">${cpChN}</span></label>`;
+  h+=`</div>`;
+  const gk=cols().filter(x=>!sameV(c.global[x.k],DEF[ui.tab][x.k])).length;
+  let ctx='';
+  if(TV().f7==='diff')ctx=[`채널 ${chD}${cpN?` (캠페인 ${cpN})`:''}`,gD?'글로벌도 변경됨':''].filter(Boolean).join(' · ');
+  h+=`<div class="f7lg">${ctx?`<span class="ctx">${ctx}</span><span class="bar"></span>`:''}<span><span class="sw">파란 값</span>은 따로 바꾼 값입니다. 채널은 글로벌과, 캠페인은 소속 채널과 비교합니다. 값에 마우스를 올리면 비교한 값이 보이고, 캠페인은 글로벌 값도 함께 보입니다.</span></div></div>`;
+  return h;
+}
+function cellPlain(v,cls){return v.n===0?`<td class="zero">기여하지 않음</td>`:`<td>${fmt(v)}</td>`}
+function unitsFor(){return ['m','h','d','y']}
+function editInputs(scope,i,k,v){
+  return vSel(scope,i,k,v);
+}
+function cellEdit(scope,i,k,v){return `<td>${editInputs(scope,i,k,v)}${liveHint(scope,i,k,v)}</td>`}
+function chanSelect(i){
+  const v=ui.draft.channels[i].ch;
+  return `<button type="button" class="vsel chsel ${v?'':'ph'} ${CM&&CM.i===i?'open':''}" data-ci="${i}" onclick="openCM(event,${i})">${v||'채널을 선택해 주세요'}${ic(CM&&CM.i===i?'expandLess':'expand',16)}</button>`;
+}
+// global edit uses cellPlain in view; in edit mode render global inputs
+const _cellPlain=cellPlain;
+cellPlain=function(v,cls,_,scope,i,k){if(ui.editing&&scope==='global')return cellEdit('global',0,k,v);return _cellPlain(v,cls)};
+
+function tog(ch){TV().open[ch]=!TV().open[ch];render()}
+
+/* ---------- 편집 ---------- */
+const mKey=x=>x.type==='global'?'g':x.id?'cp:'+x.id:x.ch?'ch:'+x.ch:x.name?'ev:'+x.name:'';
+function memosOf(key){const src=ui.draft||state[ui.tab];return (src.memos&&src.memos[key])||[]}
+const SEEN={};
+function memoBtn(key){const n=memosOf(key).length, upd=n>=2&&SEEN[ui.tab+'|'+key]!==n;return `<button type="button" class="ic-btn memo-ic ${n?'has':''}" title="${n?`메모 ${n}건${upd?' · 업데이트 있음':''}`:'메모 없음'}" onclick="openMemo('${key.replace(/'/g,"\\'")}')">${ic('memo',16)}${upd?'<span class="dot"></span>':''}</button>`}
+function memoLabel(key){if(key==='g')return '글로벌';if(key.startsWith('ch:'))return key.slice(3)+' · 채널';if(key.startsWith('cp:')){const m=campById(key.slice(3));return m?`${m.name} · ${m.ch} 캠페인`:key}if(key.startsWith('ev:'))return key.slice(3)+' · 이벤트별 설정';return key}
+const nowStr=()=>{const d=new Date();return `${TODAY} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};
+let MM=null;
+function openMemo(key){MM={key,edit:false,text:'',email:''};SEEN[ui.tab+'|'+key]=memosOf(key).length;renderMemo();$('#memoBg').classList.add('open');render()}
+function closeMemo(){MM=null;$('#memoBg').classList.remove('open')}
+function renderMemo(){
+  const list=memosOf(MM.key).slice().reverse();
+  let h=`<div class="m-head"><h3>메모 <small>${memoLabel(MM.key)}</small></h3></div><div class="m-body mm-body">`;
+  if(MM.edit){
+    h+=`<div class="mm-edit"><label>내용<textarea id="mmText" rows="4" placeholder="왜 이렇게 설정했는지 적어 주세요" oninput="MM.text=this.value;mmCheck()">${MM.text}</textarea></label><label>작성자 이메일<input id="mmEmail" type="email" placeholder="현재 로그인된 계정의 이메일" value="${MM.email}" oninput="MM.email=this.value.trim();mmCheck()"><span class="cf2-em-err" id="mmErr"></span></label></div>`;
+  }
+  h+=list.length?list.map(m=>`<div class="mm-it"><div class="mm-h"><b>${m.email}</b><span>${m.time}</span></div><div class="mm-t">${m.text.replace(/</g,'&lt;')}</div></div>`).join(''):`<div class="mm-empty">아직 메모가 없습니다. 저장 확인 창에서 남기거나, 여기서 [수정]으로 바로 적을 수 있습니다.</div>`;
+  h+=`</div><div class="m-foot">${MM.edit?`<button class="btn gray" onclick="MM.edit=false;renderMemo()">취소</button><button class="btn primary" id="mmSave" disabled onclick="saveMemo()">저장</button>`:`<button class="btn gray" onclick="closeMemo()">닫기</button><button class="btn primary" onclick="MM.edit=true;MM.text=(memosOf(MM.key).slice(-1)[0]||{}).text||'';renderMemo();setTimeout(()=>$('#mmText')?.focus(),50)">수정</button>`}</div>`;
+  $('#memoModal').innerHTML=h;
+}
+function mmCheck(){const ok=MM.text.trim().length>0&&EM_RE.test(MM.email);$('#mmSave').disabled=!ok;$('#mmErr').textContent=MM.email&&!EM_RE.test(MM.email)?'이메일 형식으로 입력해 주세요.':''}
+function saveMemo(){
+  const entry={email:MM.email,time:nowStr(),text:MM.text.trim()};
+  [state[ui.tab],ui.draft].filter(Boolean).forEach(src=>{src.memos=src.memos||{};(src.memos[MM.key]=src.memos[MM.key]||[]).push(entry)});
+  SEEN[ui.tab+'|'+MM.key]=memosOf(MM.key).length;MM.edit=false;MM.text='';renderMemo();render();toast('메모를 남겼어요. 기존 내용은 기록으로 남아요.');
+}
+function startEdit(){ui.editing=true;ui.err='';ui.draft=clone(state[ui.tab]);render()}
+function cancelEdit(){ui.editing=false;ui.draft=null;ui.err='';render()}
+function target(scope,i){return scope==='global'?ui.draft.global:scope==='ch'?ui.draft.channels[i].v:scope==='ev'?ui.draft.events[i].v:ui.draft.campaigns[i].v}
+function setV(scope,i,k,f,val){const t=target(scope,i);if(f==='n')t[k].n=Math.max(0,parseInt(val||'0',10));else t[k].u=val;ui.err='';render()}
+function addChan(){const g=ui.draft.global;ui.draft.channels.push({ch:'',isNew:true,v:ui.inhMode==='all'?{}:ZERO(g)});render()}
+function setChan(i,val){ui.draft.channels[i].ch=val;delete ui.draft.channels[i].isNew;render()}
+function delChan(i){
+  const ch=ui.draft.channels[i].ch;
+  const n=ui.draft.campaigns.filter(cp=>campById(cp.id).ch===ch).length;
+  ui.draft.channels.splice(i,1);
+  if(n)toast(`${ch} 채널 설정을 지웠어요. 아래 캠페인 ${n}개는 이제 글로벌 값을 이어받아요.`);
+  render();
+}
+function overrideCamp(ci,k){const cp=ui.draft.campaigns[ci];cp.v[k]=clone(resolveCamp(ui.draft,cp,k).v);render()}
+function resetCamp(ci,k){delete ui.draft.campaigns[ci].v[k];render()}
+function delCamp(ci){ui.draft.campaigns.splice(ci,1);render()}
+function save(){
+  const lim=2*525600;
+  if(ui.draft.channels.some(c=>!c.ch)){ui.err='채널을 선택해 주세요.';render();return}
+  const vals=[ui.draft.global,...ui.draft.channels.map(c=>c.v),...ui.draft.campaigns.map(c=>c.v),...(ui.draft.events||[]).map(e=>e.v)];
+  if((ui.draft.events||[]).some(e=>Array.isArray(e.chs)&&!e.chs.length)){ui.err='이벤트별 설정의 적용 채널을 하나 이상 선택해 주세요.';render();return}
+  if(vals.some(o=>Object.values(o).some(v=>toMin(v)>lim))){ui.err=ui.tab==='install'?'[설치] 기간은 0분 ~ 2년 사이로 정할 수 있어요.':'[인앱이벤트] 기간은 0분 ~ 2년 사이로 정할 수 있어요.';render();return}
+  ui.draft.campaigns=ui.draft.campaigns.filter(c=>Object.keys(c.v).length);
+  ui.draft.channels=ui.draft.channels.filter(c=>Object.keys(c.v).length);
+  const ch=diff();
+  if(!ch.length){ui.editing=false;ui.draft=null;render();toast('바뀐 내용이 없어요.');return}
+  ui.changes=ch;ui.email='';
+  if(ui.saveMode==='C'){ui.review=true;render();window.scrollTo(0,$('#view').offsetTop-20)}
+  else openConfirm();
+}
+const EM_RE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function cfEmail(v){ui.email=v.trim();const ok=EM_RE.test(ui.email);$('#cfSave').disabled=!ok;$('#cfEmErr').textContent=ui.email&&!ok?'이메일 형식으로 입력해 주세요.':'';$('#cfEm').classList.toggle('bad',!!ui.email&&!ok)}
+function applySave(){
+  if(!EM_RE.test(ui.email||'')){cfEmail(ui.email||'');return}
+  ui.lastEmail=ui.email;
+  const o=state[ui.tab],d=ui.draft,J=JSON.stringify;
+  if(J(o.global)!==J(d.global))d.gupd=TODAY;
+  d.channels.forEach(c=>{const b=o.channels.find(x=>x.ch===c.ch);if(!b||J(b.v)!==J(c.v))c.upd=TODAY});
+  d.campaigns.forEach(c=>{const b=o.campaigns.find(x=>x.id===c.id);if(!b||J(b.v)!==J(c.v)||(b.end||null)!==(c.end||null))c.upd=TODAY});
+  (d.events||[]).forEach(e=>{const b=(o.events||[]).find(x=>x.name===e.name);if(!b||J(b.v)!==J(e.v))e.upd=TODAY});
+  d.memos=d.memos||{};document.querySelectorAll('#cfBody textarea[data-mk]').forEach(t=>{const v=t.value.trim();if(!v||!t.dataset.mk)return;(d.memos[t.dataset.mk]=d.memos[t.dataset.mk]||[]).push({email:ui.email,time:nowStr(),text:v})});
+  state[ui.tab]=ui.draft;ui.editing=false;ui.draft=null;ui.review=false;ui.changes=null;ui.emailErr=false;
+  closeConfirm();render();toast('적용했어요. 최대 15분 안에 반영되고, 이후 들어오는 데이터부터 적용돼요.');
+}
+function backToEdit(){ui.review=false;ui.changes=null;closeConfirm();render()}
+
+/* ---------- 5번: 바뀐 내용과 영향 범위 ---------- */
+const eqv=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const kLabel=k=>{const c=cols().find(x=>x.k===k);return ui.tab==='install'?`${c.t} · ${c.s}`:'설치 후 인정 기간'};
+const campsOf=ch=>CAMPS.filter(c=>c.ch===ch);
+function diff(){
+  const b=state[ui.tab],a=ui.draft,ks=cols().map(c=>c.k),out=[];
+  ks.forEach(k=>{if(!eqv(b.global[k],a.global[k]))out.push({type:'global',k,b:b.global[k],a:a.global[k]})});
+  const bm=Object.fromEntries(b.channels.map(c=>[c.ch,c])),am=Object.fromEntries(a.channels.map(c=>[c.ch,c]));
+  a.channels.forEach(c=>{const o=bm[c.ch];if(!o)out.push({type:'chAdd',ch:c.ch,a:c.v});else ks.forEach(k=>{if(!eqv(o.v[k],c.v[k]))out.push({type:'ch',ch:c.ch,k,b:o.v[k],a:c.v[k]})})});
+  b.channels.forEach(o=>{if(!am[o.ch])out.push({type:'chDel',ch:o.ch,b:o.v})});
+  const bc=Object.fromEntries(b.campaigns.map(c=>[c.id,c])),ac=Object.fromEntries(a.campaigns.map(c=>[c.id,c]));
+  a.campaigns.forEach(c=>{const o=bc[c.id];if(!o)out.push({type:'cpAdd',id:c.id,a:c.v,end:c.end||null});else{ks.forEach(k=>{if(!eqv(o.v[k],c.v[k]))out.push({type:'cp',id:c.id,k,b:o.v[k],a:c.v[k]})});if((o.end||null)!==(c.end||null))out.push({type:'cpEnd',id:c.id,b:o.end||null,a:c.end||null})}});
+  b.campaigns.forEach(o=>{if(!ac[o.id])out.push({type:'cpDel',id:o.id})});
+  if(a.events){const be=b.events||[];
+    a.events.forEach((e,i)=>{const o=be.find(x=>x.name===e.name);if(!o)out.push({type:'evAdd',name:e.name,a:e.v.install});else if(!eqv(o.v,e.v))out.push({type:'ev',name:e.name,b:o.v.install,a:e.v.install})});
+    be.forEach(o=>{if(!a.events.find(x=>x.name===o.name))out.push({type:'evDel',name:o.name,b:o.v.install})});}
+  return out;
+}
+const rowsLine=v=>Object.keys(v).map(k=>`${kLabel(k).split(' · ')[0]==='설치 후 인정 기간'?'':kLabel(k)+' '}${vtxt(v[k])}`).join(' / ');
+function impact(x){
+  const a=ui.draft, rowChs=new Set(a.channels.map(c=>c.ch));
+  if(x.type==='global'){
+    const follow=CHANNELS.filter(c=>!rowChs.has(c));
+    return {title:`글로벌 · ${kLabel(x.k)}`,b:vtxt(x.b),a:vtxt(x.a),
+      apply:{text:`채널 설정이 없는 채널 ${follow.length}개와 그 채널의 캠페인`,list:follow},
+      keep:{text:`따로 정한 채널 ${a.channels.length}개${a.campaigns.length?`, 캠페인 ${a.campaigns.length}개`:''}는 지금 값을 유지해요`,
+            list:[...a.channels.map(c=>`${c.ch} — ${vtxt(c.v[x.k])}`),...a.campaigns.map(cp=>`${campById(cp.id).name} (${campById(cp.id).ch}) — ${vtxt(resolveCamp(a,cp,x.k).v)}`)]}};
+  }
+  if(x.type==='ch'||x.type==='chAdd'||x.type==='chDel'){
+    const rows=a.campaigns.filter(cp=>campById(cp.id).ch===x.ch), n=campsOf(x.ch).length-rows.length;
+    const keep=rows.length?{text:`따로 정한 캠페인 ${rows.length}개는 지금 값을 유지해요`,list:rows.map(cp=>`${campById(cp.id).name} — ${x.k?vtxt(resolveCamp(a,cp,x.k).v):rowsLine(cp.v)}`)}:null;
+    if(x.type==='ch')return {title:`${x.ch} · ${kLabel(x.k)}`,b:vtxt(x.b),a:vtxt(x.a),apply:{text:`${x.ch}의 캠페인 ${n}개`},keep};
+    if(x.type==='chAdd')return {title:`${x.ch} 채널 설정 추가`,b:'글로벌 따름',a:rowsLine(x.a),apply:{text:`${x.ch}의 캠페인 ${n}개가 글로벌 대신 이 값을 따라요`},keep};
+    return {title:`${x.ch} 채널 설정 삭제`,b:rowsLine(x.b),a:'글로벌 따름',apply:{text:`${x.ch}의 캠페인 ${n}개가 이제 글로벌 값을 따라요`},keep};
+  }
+  if(x.type==='cp'||x.type==='cpAdd'||x.type==='cpDel'){
+    const m=campById(x.id);
+    if(x.type==='cp')return {title:`${m.name} (${m.ch}) · ${kLabel(x.k)}`,b:vtxt(x.b),a:vtxt(x.a),apply:{text:'이 캠페인 하나에만 적용돼요'}};
+    if(x.type==='cpAdd')return {title:`${m.name} (${m.ch}) 캠페인 설정 추가`,b:`${m.ch} 값 따름`,a:rowsLine(x.a),apply:{text:'이 캠페인 하나에만 적용돼요. 이후 채널 값이 바뀌어도 이 캠페인은 따라가지 않아요'}};
+    return {title:`${m.name} (${m.ch}) 캠페인 설정 삭제`,b:'캠페인 값',a:`${m.ch} 값 따름`,apply:{text:'이 캠페인이 다시 채널 값을 따라요'}};
+  }
+  const t=x.type==='evAdd'?'이벤트별 설정 추가':x.type==='evDel'?'이벤트별 설정 삭제':'이벤트별 설정 변경';
+  return {title:`'${x.name}' ${t}`,b:x.b?vtxt(x.b):'위 표의 기간',a:x.a?vtxt(x.a):'위 표의 기간',apply:{text:`모든 채널·캠페인으로 설치한 사용자의 '${x.name}'에 적용돼요`}};
+}
+function impactCount(x){const i=impact(x);return `${i.apply.text}${i.keep?` · ${i.keep.text}`:''}`}
+function changeBlock(x,idx){
+  const i=impact(x);
+  return `<div class="chg"><div class="chg-t">${i.title}</div><div class="chg-v"><span class="b">${i.b}</span> → <span class="a">${i.a}</span></div>
+    <div class="chg-r ok">반영 · ${i.apply.text}${i.apply.list?` <button class="lnk" onclick="this.nextElementSibling.classList.toggle('open')">목록</button><div class="lst">${i.apply.list.join(', ')}</div>`:''}</div>
+    ${i.keep?`<div class="chg-r keep">유지 · ${i.keep.text} <button class="lnk" onclick="this.nextElementSibling.classList.toggle('open')">목록</button><div class="lst">${i.keep.list.map(s=>`<div>${s}</div>`).join('')}</div></div>`:''}</div>`;
+}
+const TIMING=`저장 후 들어오는 데이터부터 적용되고, 지난 데이터는 다시 계산하지 않아요. 반영까지 최대 15분 걸릴 수 있어요.`;
+function emailBox(){return `<label class="em">계속하려면 현재 로그인된 계정의 이메일 주소를 입력해 주세요.
+  <input id="emIn" type="email" placeholder="연습용이라 아무 이메일이나 입력해도 돼요" value="${ui.email||''}" oninput="ui.email=this.value">
+  ${ui.emailErr?'<span class="em-err">이메일 형식으로 입력해 주세요.</span>':''}</label>`}
+/* ---------- 5번 결정: 확인 창 · AS IS → TO BE ---------- */
+const pill=(v,cls)=>`<span class="pill ${cls||''}">${v}</span>`;
+const arrow=`<span class="arr">→</span>`;
+function abRow(label,sub,as,to,changed,list){
+  return `<tr class="${changed?'chg-row':'keep-row'}"><td class="ab-t">${label}${sub?`<div class="ab-sub">${sub}</div>`:''}${list?`<button class="lnk" onclick="this.nextElementSibling.classList.toggle('open')">목록 보기</button><div class="lst">${list}</div>`:''}</td>
+    <td class="ab-v">${pill(as,'as')}${arrow}${pill(to,changed?'to':'same')}</td>
+    <td class="ab-s">${changed?'<span class="st up">바뀜</span>':'<span class="st keep">그대로</span>'}</td></tr>`;
+}
+function keepNote(text,list){
+  return `<tr class="keep-note"><td colspan="3">${text}${list?` <button class="lnk" onclick="this.nextElementSibling.classList.toggle('open')">목록 보기</button><div class="lst">${list}</div>`:''}</td></tr>`;
+}
+function asisBlock(x){
+  const a=ui.draft, rowChs=new Set(a.channels.map(c=>c.ch));
+  const campName=cp=>{const m=campById(cp.id);return `${m.name} <span class="muted">· ${m.ch}</span>`};
+  let title,as,to,rows=[];
+  if(x.type==='global'||x.type==='ch'){
+    title=x.type==='global'?`앱 전체(글로벌) · ${kLabel(x.k)}`:`${x.ch} · ${kLabel(x.k)}`;as=vtxt(x.b);to=vtxt(x.a);
+    if(x.type==='global'){
+      const follow=CHANNELS.filter(c=>!rowChs.has(c));
+      const fc=follow.reduce((s,ch)=>s+campsOf(ch).length,0)-a.campaigns.filter(cp=>!rowChs.has(campById(cp.id).ch)).length;
+      rows.push(`<tr class="grp"><td colspan="3">어디에 반영되나요</td></tr>`);
+      rows.push(abRow(`채널 설정이 없는 채널 ${follow.length}개`,'글로벌 값을 따르는 채널',as,to,true,follow.join(', ')));
+      rows.push(abRow(`위 채널들의 캠페인 ${fc.toLocaleString()}개`,'따로 정한 캠페인은 제외',as,to,true));
+      const keepList=[...a.channels.map(c=>`<div>${c.ch} — ${vtxt(c.v[x.k])}</div>`),...a.campaigns.map(cp=>`<div>${campName(cp)} — ${vtxt(cp.v[x.k])}</div>`)].join('');
+      rows.push(keepNote(`따로 설정한 채널 ${a.channels.length}개${a.campaigns.length?`와 캠페인 ${a.campaigns.length}개`:''}는 바뀌지 않아요.`,keepList));
+    }else{
+      const own=a.campaigns.filter(cp=>campById(cp.id).ch===x.ch), n=campsOf(x.ch).length-own.length;
+      rows.push(`<tr class="grp"><td colspan="3">어디에 반영되나요</td></tr>`);
+      rows.push(abRow(`${x.ch}의 캠페인 ${n}개`,'따로 정한 캠페인은 제외',as,to,true));
+      if(own.length)rows.push(keepNote(`이 채널에서 따로 설정한 캠페인 ${own.length}개는 바뀌지 않아요.`,own.map(cp=>`<div>${campName(cp)} — ${vtxt(cp.v[x.k])}</div>`).join('')));
+    }
+  }else if(['chAdd','chDel','cp','cpAdd','cpDel'].includes(x.type)){
+    const s=state[ui.tab], i=impact(x), ks=x.type==='cp'?[x.k]:cols().map(c=>c.k);
+    const isCamp=x.type.startsWith('cp'), m=isCamp?campById(x.id):null, chName=isCamp?m.ch:x.ch;
+    const chanVal=(c,k)=>{const r=c.channels.find(y=>y.ch===chName);return r&&r.v[k]?r.v[k]:c.global[k]};
+    const before=k=>x.type==='chAdd'?s.global[k]:x.type==='chDel'?x.b[k]:x.type==='cpAdd'?chanVal(s,k):x.type==='cpDel'?s.campaigns.find(c=>c.id===x.id).v[k]:x.b;
+    const after=k=>x.type==='chAdd'?x.a[k]:x.type==='chDel'?a.global[k]:x.type==='cpAdd'?x.a[k]:x.type==='cpDel'?chanVal(a,k):x.a;
+    title=i.title;as=i.b;to=x.type==='cp'?i.a:(x.type==='chDel'||x.type==='cpDel'?i.a:(isCamp?'캠페인 값':'채널 값'));
+    rows.push(`<tr class="grp"><td colspan="3">${isCamp?`이 캠페인에 적용되는 값 · ${m.name}`:`${x.ch}에 적용되는 값`}</td></tr>`);
+    const changed=ks.filter(k=>!eqv(before(k),after(k)));
+    changed.forEach(k=>rows.push(abRow(kLabel(k),'',vtxt(before(k)),vtxt(after(k)),true)));
+    if(!changed.length)rows.push(keepNote('적용되는 값은 바뀌지 않아요.'));
+    rows.push(keepNote(i.apply.text+'.'));
+    if(i.keep)rows.push(keepNote(i.keep.text.replace('지금 값을 유지해요','바뀌지 않아요')+'.',i.keep.list.map(t=>`<div>${t}</div>`).join('')));
+  }else{
+    const i=impact(x);title=i.title;as=i.b;to=i.a;
+    rows.push(`<tr class="grp"><td colspan="3">어디에 반영되나요</td></tr>`);
+    rows.push(abRow(i.apply.text,'',as,to,true));
+  }
+  return `<div class="ab"><div class="ab-h"><div class="ab-title">${title}</div><div class="ab-big">${pill(as,'as big')}${arrow}${pill(to,'to big')}</div></div>
+    <table class="abt"><thead><tr><th>대상</th><th>AS IS → TO BE</th><th></th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+}
+/* ---------- 확인 창 (Figma '저장 확인 창' 1021:701 기준) ---------- */
+const sp=v=>v.n===0?'기여하지 않음':`${v.n} ${UL[v.u]}`;
+const winName=()=>ui.tab==='install'?'룩백 윈도우':'어트리뷰션 윈도우';
+function keepRow(tag,name,right){return `<div class="kr"><span class="ktag ${tag==='캠페인'?'camp':''}">${tag}</span><span class="kn">${name}</span><span class="kv">${right}</span></div>`}
+function card(title,count,countCls,desc,list){
+  return {title,count,countCls,desc,list,toString(){return cardHtml(this)}};
+}
+function cardHtml({title,count,countCls,desc,list}){
+  return `<div class="cf2-card"><div class="cf2-ch"><b>${title}</b><span class="${countCls}">${count}</span></div><p>${desc}</p>${list?`<div class="klist">${list}</div>`:''}</div>`;
+}
+function kvKeep(v,k,multi){
+  if(!multi)return `${sp(v[k])} 유지`;
+  return multi.map(q=>`${kLabel(q).replace(' 모델링','').replace(' 매칭','').replace(/ · /g,'·')} ${sp(v[q])}`).join(', ')+' 유지';
+}
+function cf2Parts(x,multi){
+  const a=ui.draft, rowChs=new Set(a.channels.map(c=>c.ch));
+  const cn=cp=>campById(cp.id);
+  let sum=[],cards=[];
+  if(x.type==='global'){
+    sum.push([kLabel(x.k),sp(x.b),sp(x.a)]);
+    const follow=CHANNELS.filter(c=>!rowChs.has(c));
+    const rowsInFollow=a.campaigns.filter(cp=>!isPaused(cp)&&!rowChs.has(cn(cp).ch));
+    const chgCamp=follow.reduce((s,ch)=>s+campsOf(ch).length,0)-rowsInFollow.length;
+    const keepCamp=a.channels.reduce((s,c)=>s+campsOf(c.ch).length,0)+rowsInFollow.length;
+    cards.push(card('바뀌는 곳',`채널 ${follow.length}개 · 캠페인 ${chgCamp.toLocaleString()}개`,'cnt-up',`${multi?'이 항목들을':'이 항목을'} 따로 정하지 않고 글로벌을 따르던 곳입니다. 적용하면 ${multi?'위 값이':sp(x.a)+'이'} 적용됩니다.`));
+    const list=a.channels.map(c=>keepRow('채널',c.ch,`${kvKeep(c.v,x.k,multi)} · 캠페인 ${campsOf(c.ch).length}개`)).join('')+rowsInFollow.map(cp=>keepRow('캠페인',`${cn(cp).name} (${cn(cp).ch})`,`${kvKeep(cp.v,x.k,multi)}`)).join('');
+    if(a.channels.length||rowsInFollow.length)cards.push(card('그대로 유지되는 곳',`채널 ${a.channels.length}개 · 캠페인 ${keepCamp.toLocaleString()}개`,'cnt',`${multi?'이 항목들을':'이 항목을'} 직접 설정해 둔 채널과 그 아래 캠페인입니다. 바꾸려면 각 채널·캠페인에서 따로 수정해야 합니다.`,list));
+  }else if(x.type==='ch'){
+    sum.push([`${x.ch} · ${kLabel(x.k)}`,sp(x.b),sp(x.a)]);
+    const own=a.campaigns.filter(cp=>!isPaused(cp)&&cn(cp).ch===x.ch), n=campsOf(x.ch).length-own.length;
+    cards.push(card('바뀌는 곳',`캠페인 ${n}개`,'cnt-up',`${x.ch}에서 ${multi?'이 항목들을':'이 항목을'} 따로 정하지 않은 캠페인입니다. 적용하면 ${multi?'위 값이':sp(x.a)+'이'} 적용됩니다.`));
+    if(own.length)cards.push(card('그대로 유지되는 곳',`캠페인 ${own.length}개`,'cnt',`${multi?'이 항목들을':'이 항목을'} 직접 설정해 둔 캠페인입니다. 바꾸려면 각 캠페인에서 따로 수정해야 합니다.`,own.map(cp=>keepRow('캠페인',cn(cp).name,`${kvKeep(cp.v,x.k,multi)}`)).join('')));
+  }else if(['chAdd','chDel','cp','cpAdd','cpDel'].includes(x.type)){
+    const s=state[ui.tab], isCamp=x.type.startsWith('cp'), m=isCamp?campById(x.id):null, chName=isCamp?m.ch:x.ch;
+    const chanVal=(c,k)=>{const r=c.channels.find(y=>y.ch===chName);return r&&r.v[k]?r.v[k]:c.global[k]};
+    const ks=x.type==='cp'?[x.k]:cols().map(c=>c.k);
+    const before=k=>x.type==='chAdd'?s.global[k]:x.type==='chDel'?x.b[k]:x.type==='cpAdd'?chanVal(s,k):x.type==='cpDel'?s.campaigns.find(c=>c.id===x.id).v[k]:x.b;
+    const after=k=>x.type==='chAdd'?x.a[k]:x.type==='chDel'?a.global[k]:x.type==='cpAdd'?x.a[k]:x.type==='cpDel'?chanVal(a,k):x.a;
+    const who=isCamp?`${m.name} (${m.ch})`:x.ch;
+    ks.forEach(k=>{if(!eqv(before(k),after(k)))sum.push([`${who} · ${kLabel(k)}`,sp(before(k)),sp(after(k))])});
+    if(!sum.length)ks.forEach(k=>sum.push([`${who} · ${kLabel(k)}`,sp(before(k)),sp(after(k))]));
+    if(isCamp){
+      const dcp=(ui.draft.campaigns||[]).find(c=>c.id===x.id), endv=x.type==='cpAdd'?(x.end||(dcp&&dcp.end)):(dcp&&dcp.end);
+      if(x.type==='cpAdd'&&endv)sum.push([`${who} · 종료일`,'없음',endv]);
+      else if(x.type!=='cpDel')sum.push([`${who} · 종료일`,null,endv||'없음']);
+      const t=x.type==='cpDel'?`설정을 지우면 이 캠페인으로 들어온 데이터는 다시 ${m.ch} 값을 따릅니다. ${m.ch} 채널과 다른 캠페인은 그대로입니다.`:`이 캠페인으로 들어온 데이터만 바뀝니다. ${m.ch} 채널과 다른 캠페인은 그대로이고, 이후 ${m.ch} 값이 바뀌어도 이 캠페인은 따라가지 않습니다.${x.type!=='cpDel'&&endv?` ${endv}이 지나면 중지되고, 그 뒤 들어오는 데이터부터 ${m.ch} 값을 따릅니다.`:x.type!=='cpDel'?' 종료일이 없어서 직접 지울 때까지 이 값이 쓰입니다.':''}`;
+      cards.push(card('바뀌는 곳','이 캠페인만','cnt-up',t));
+    }else{
+      const own=a.campaigns.filter(cp=>!isPaused(cp)&&cn(cp).ch===x.ch), n=campsOf(x.ch).length-own.length;
+      cards.push(card('바뀌는 곳',`채널 1개 · 캠페인 ${n}개`,'cnt-up',x.type==='chAdd'?`${x.ch}과 그 아래 캠페인이 글로벌 대신 이 값을 따릅니다.`:`${x.ch}과 그 아래 캠페인이 다시 글로벌 값을 따릅니다.`));
+      if(own.length)cards.push(card('그대로 유지되는 곳',`캠페인 ${own.length}개`,'cnt','직접 설정해 둔 캠페인은 바뀌지 않습니다.',own.map(cp=>keepRow('캠페인',cn(cp).name,'각자 값 유지')).join('')));
+    }
+  }else if(x.type==='cpEnd'){
+    const m=campById(x.id);
+    sum.push([`${m.name} (${m.ch}) · 종료일`,x.b||'없음',x.a||'없음']);
+    const t=!x.a?`종료일 없이 계속 적용됩니다. 필요 없어지면 직접 삭제해 주세요.`:x.a<TODAY?`종료일이 이미 지났습니다. 적용하면 이 캠페인 설정은 바로 중지되고, 그 뒤 들어오는 데이터부터 ${m.ch} 값을 따릅니다.`:`${x.a}이 지나면 이 캠페인 설정은 중지되고, 그 뒤 들어오는 데이터부터 ${m.ch} 값을 따릅니다. 행은 표에 남고, 필요 없으면 직접 삭제해야 합니다.`;
+    cards.push(card('바뀌는 곳','이 캠페인만','cnt-up',t));
+  }else{
+    const lbl=x.type==='evAdd'?' 추가':x.type==='evDel'?' 삭제':'';
+    sum.push([`이벤트별 설정 · ${x.name}${lbl}`,x.b?sp(x.b):'위 표의 기간',x.a?sp(x.a):'위 표의 기간']);
+    if(x.type==='evDel')cards.push(card('바뀌는 곳','위 표를 따름','cnt-up',`'${x.name}'은 다시 위 표를 따릅니다. 어느 채널·캠페인으로 설치했는지에 따라 그 행의 기간이 적용됩니다.`));
+    else cards.push(card('바뀌는 곳','모든 채널·캠페인','cnt-up',`어느 채널·캠페인으로 설치했든 '${x.name}'에 이 기간이 적용됩니다.`));
+  }
+  return {sum,cards};
+}
+/* 같은 글로벌·같은 채널·같은 캠페인 변경은 한 블록으로 묶는다 */
+function cf2Block(g){
+  const ks=[...new Set(g.map(x=>x.k).filter(Boolean))], multi=g.length>1?ks:false, parts=g.map(x=>cf2Parts(x,multi));
+  let sum=parts.flatMap(p=>p.sum);const cards=[];
+  {const isEnd=r=>/ · 종료일$/.test(r[0]);const hasReal=sum.some(r=>isEnd(r)&&r[1]!==null);sum=sum.filter((r,i)=>!isEnd(r)||(hasReal?r[1]!==null:sum.findIndex(y=>isEnd(y))===i));}
+  parts.flatMap(p=>p.cards).forEach(c=>{const o=cards.find(y=>y.title===c.title);
+    if(!o){cards.push({...c});return}
+    if(!o.desc.includes(c.desc))o.desc+=' '+c.desc;
+    if(c.list&&o.list!==c.list)o.list=(o.list||'')+c.list;});
+  const x=g[0], isCamp=!!x.id, m=isCamp?campById(x.id):null;
+  const key=x.type==='global'?'':isCamp?`${m.name} (${m.ch})`:x.ch?x.ch:'이벤트별 설정';
+  const head=x.type==='global'?'글로벌':isCamp?`${m.name}<small> · ${m.ch} 캠페인</small>`:x.ch?`${x.ch}<small> · 채널</small>`:'이벤트별 설정';
+  const lbl=t=>key&&t.startsWith(key+' · ')?t.slice(key.length+3):t;
+  const mk=mKey(x);
+  return `<div class="cf2-sum"><div class="cf2-st">${head}</div>${sum.map(r=>`<div><span>${lbl(r[0])}</span><b>${r[1]===null?`<span class="cf2-same">${r[2]}</span>`:`<span class="cf2-b">${r[1]} → </span>${r[2]}`}</b></div>`).join('')}</div>${cards.map(cardHtml).join('')}<label class="cf2-memo"><span>메모 <em>선택</em></span><textarea data-mk="${mk}" rows="2" placeholder="왜 이렇게 설정했는지 적어 두면 행의 메모 기록에 남습니다"></textarea></label>`;
+}
+function cf2Groups(x){
+  const m=new Map();
+  x.forEach((c,i)=>{const key=c.type==='global'?'g':c.id?'cp:'+c.id:c.ch?'ch:'+c.ch:c.name?'ev:'+c.name:'u'+i;(m.get(key)||m.set(key,[]).get(key)).push(c)});
+  return [...m.values()];
+}
+function openConfirm(){
+  const x=ui.changes, allGlobal=x.every(c=>c.type==='global');
+  $('#cfBody').innerHTML=`<p class="cf2-lead">기여 기간은 광고 성과에 영향을 주기 때문에 적용하기 전에 충분한 검토를 진행해 주세요. '적용'을 클릭하면 에어브릿지 어트리뷰션에 실제 반영되기까지 최대 15분 소요될 수 있으며 이후에 수집되는 이벤트부터 수정한 기여 기간이 적용됩니다.</p>`
+    +cf2Groups(x).map(cf2Block).join('<div class="cf2-sep"></div>')
+    +(x.some(c=>c.type&&c.type.startsWith('ev'))?`<div class="cf2-after">적용 후 설정된 이벤트 <b>${ui.draft.events.length}개</b> · 글로벌 값 이벤트 <b>${EVENTS.length-new Set(ui.draft.events.map(e=>e.name)).size}개</b>${ui.draft.events.length?` — ${ui.draft.events.map(e=>`${e.name} ${e.v.install.n===0?'기여하지 않음':vtxt(e.v.install)}`).join(', ')}`:''}</div>`:'')
+    +`<label class="cf2-em">계속하려면 현재 로그인된 계정의 이메일 주소를 입력해 주세요.<input id="cfEm" type="email" placeholder="아무 이메일이나 입력해 주세요 (예: test@test.com)" autocomplete="off" value="${ui.lastEmail||''}" oninput="cfEmail(this.value)"><span class="cf2-em-err" id="cfEmErr"></span></label>`;
+  ui.email='';$('#cfSave').disabled=true;if(ui.lastEmail)cfEmail(ui.lastEmail);setTimeout(()=>$('#cfEm')?.focus(),50);
+  $('#confirmBg').classList.add('open');
+}
+function closeConfirm(){$('#confirmBg').classList.remove('open')}
+function renderReview(){
+  const x=ui.changes;
+  return `<div class="review"><h3>변경 내역 확인</h3><p class="cf-lead">저장하기 전에 바꾼 설정 ${x.length}개와 반영되는 곳을 확인해 주세요.</p>
+    <table class="rvt"><thead><tr><th>위치 · 항목</th><th>지금</th><th>바꾼 뒤</th><th>반영되는 곳</th><th>그대로인 곳</th></tr></thead><tbody>
+    ${x.map(c=>{const i=impact(c);return `<tr><td>${i.title}</td><td class="b">${i.b}</td><td class="a">${i.a}</td><td>${i.apply.text}${i.apply.list?` <button class="lnk" onclick="this.nextElementSibling.classList.toggle('open')">목록</button><div class="lst">${i.apply.list.join(', ')}</div>`:''}</td><td>${i.keep?`${i.keep.text} <button class="lnk" onclick="this.nextElementSibling.classList.toggle('open')">목록</button><div class="lst">${i.keep.list.map(s=>`<div>${s}</div>`).join('')}</div>`:'—'}</td></tr>`}).join('')}
+    </tbody></table><div class="cf-time">${TIMING}</div>${emailBox()}
+    <div class="actions"><div class="l"></div><div class="r"><button class="btn" onclick="backToEdit()">수정으로 돌아가기</button><button class="btn primary" onclick="applySave()">적용</button></div></div></div>`;
+}
+/* B: 편집 중 미리 알림 */
+function liveHint(scope,i,k,v){
+  if(ui.saveMode!=='B')return '';
+  const s=state[ui.tab];
+  if(scope==='global'){if(eqv(s.global[k],v))return '';return `<div class="live">${impactCount({type:'global',k,b:s.global[k],a:v})}</div>`}
+  if(scope==='ch'){const row=ui.draft.channels[i];if(!row.ch)return '';const o=s.channels.find(c=>c.ch===row.ch);if(o&&eqv(o.v[k],v))return '';
+    return `<div class="live">${impactCount({type:o?'ch':'chAdd',ch:row.ch,k,b:o&&o.v[k],a:o?v:row.v})}</div>`}
+  return '';
+}
+
+/* ---------- 캠페인 선택 ---------- */
+let CM=null;
+function openCM(e,i){e.stopPropagation();if(CM&&CM.i===i){closeCM();return}CM={i,q:''};drawCM(true)}
+function closeCM(){CM=null;$('#chMenu').classList.remove('open');document.querySelectorAll('.chsel').forEach(t=>{t.classList.remove('open');const p=t.querySelector(':scope > svg path');if(p)p.setAttribute('d',ICP.expand)})}
+function drawCM(focus){
+  const m=$('#chMenu'),q=CM.q,used=new Set(ui.draft.channels.map(c=>c.ch).filter(Boolean));
+  const L=CHANNELS.filter(c=>!used.has(c)&&(!q||c.includes(q)));
+  m.innerHTML=`<div class="sm-search">${ic('search',16)}<input type="text" placeholder="채널 검색" value="${q}" oninput="CM.q=this.value.trim();drawCM(false)" onkeydown="if(event.key==='Enter'){const b=$('#chMenu .sm-it');if(b)b.click()}"></div><div class="sm-list">${L.map(c=>`<button type="button" class="sm-it" onclick="pickCh('${c}')">${c}</button>`).join('')||'<div class="sm-empty">검색 결과가 없어요.</div>'}</div>`;
+  m.classList.add('open');const t=document.querySelector(`.chsel[data-ci="${CM.i}"]`);if(t){t.classList.add('open');const p=t.querySelector(':scope > svg path');if(p)p.setAttribute('d',ICP.expandLess)}
+  posCM();if(focus)m.querySelector('input').focus();
+}
+function posCM(){if(!CM)return;const t=document.querySelector(`.chsel[data-ci="${CM.i}"]`),m=$('#chMenu');if(!t){closeCM();return}const r=t.getBoundingClientRect();m.style.minWidth=r.width+'px';const h=m.offsetHeight;let top=r.bottom+4;if(top+h>innerHeight-8)top=Math.max(8,r.top-h-4);m.style.left=Math.min(r.left,innerWidth-m.offsetWidth-8)+'px';m.style.top=top+'px'}
+function pickCh(name){const i=CM.i;closeCM();setChan(i,name)}
+document.addEventListener('mousedown',e=>{if(!CM)return;if(e.target.closest('#chMenu')||e.target.closest('.chsel'))return;closeCM()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&CM)closeCM()});
+window.addEventListener('scroll',()=>{if(CM)posCM()},true);window.addEventListener('resize',()=>{if(CM)posCM()});
+function openEvPicker(){$('#eq').value='';$('#eqt').value='';$('#evPickerBg').classList.add('open');renderEvPicker();setTimeout(()=>$('#eq').focus(),50)}
+function closeEvPicker(){$('#evPickerBg').classList.remove('open')}
+const escH=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hlq=(t,q)=>{if(!q)return escH(t);const i=t.indexOf(q);return i<0?escH(t):escH(t.slice(0,i))+'<mark class="hl">'+escH(q)+'</mark>'+escH(t.slice(i+q.length))};
+const rankq=(n,q)=>!q?0:n===q?0:n.startsWith(q)?1:n.includes(q)?2:3;
+function renderEvPicker(){
+  const q=$('#eq').value.trim(), t=$('#eqt').value;
+  const used=new Set(ui.draft.events.map(e=>e.name));
+  const list=EVENTS.filter(e=>(!t||e.t===t)&&(!q||e.n.includes(q))).map((e,i)=>[e,i]).sort((a,b)=>rankq(a[0].n,q)-rankq(b[0].n,q)||a[1]-b[1]).map(a=>a[0]);
+  $('#ecount').textContent=`${list.length}개`;
+  $('#elist').innerHTML=list.map(e=>{const done=used.has(e.n);
+    return `<tr class="${done?'disabled':''}" ${done?'':`onclick="pickEv('${e.n}')"`}><td>${hlq(e.n,q)}${done?'<span class="tag cnt">추가됨</span>':''}</td><td class="c2">${e.t==='std'?'스탠다드 이벤트':'커스텀 이벤트'}</td><td class="c3">${done?'이미 설정에 있음':''}</td></tr>`}).join('')||'<tr class="disabled"><td>검색 결과가 없어요.</td></tr>';
+}
+function pickEv(name){addEv(name);closeEvPicker();toast('이벤트를 추가했어요. 기간은 글로벌 값이 복사됐어요. 필요한 값으로 바꿔 주세요.')}
+function openPicker(ch){
+  ui.pickFor=ch;
+  $('#pickerTitle').textContent=ch?`캠페인 추가 - ${ch}`:'캠페인 추가';
+  $('#pq').value='';$('#pickerBg').classList.add('open');renderPicker();setTimeout(()=>$('#pq').focus(),50);
+}
+function closePicker(){$('#pickerBg').classList.remove('open')}
+function renderPicker(){
+  const q=$('#pq').value.trim(), ch=ui.pickFor, act=$('#pact').checked;
+  const added=new Set(ui.draft.campaigns.map(c=>c.id));
+  const list=CAMPS.filter(c=>(!ch||c.ch===ch)&&(!act||c.active)&&(!q||c.name.includes(q)||c.id.includes(q))).map((c,i)=>[c,i]).sort((a,b)=>rankq(a[0].name,q)-rankq(b[0].name,q)||a[1]-b[1]).map(a=>a[0]);
+  $('#pcount').textContent=`${list.length.toLocaleString()}개${list.length>150?' · 앞의 150개만 표시':''}`;
+  $('#plist').innerHTML=list.slice(0,150).map(c=>{
+    const done=added.has(c.id);
+    return `<tr class="${done?'disabled':''}" ${done?'':`onclick="pick('${c.id}')"`}><td>${hlq(c.name,q)}${c.active?'<span class="tag on">집행 중</span>':''}${done?'<span class="tag cnt">추가됨</span>':''}</td><td class="c2">${c.ch}</td><td class="c3">ID ${hlq(c.id,q)}</td></tr>`;
+  }).join('')||'<tr class="disabled"><td>검색 결과가 없어요.</td></tr>';
+}
+function pick(id){
+  const cp={id,v:{}};
+  if(ui.inhMode==='full')Object.keys(ui.draft.global).forEach(k=>cp.v[k]=clone(resolveCamp(ui.draft,cp,k).v));
+  ui.draft.campaigns.push(cp);
+  TV().open[campById(id).ch]=true;
+  closePicker();render();
+  toast(ui.inhMode==='full'?'캠페인을 추가했어요. 지금 채널 값이 복사됐어요. 네 칸 모두 이 캠페인의 값이에요.':'캠페인을 추가했어요. 다르게 정할 칸만 눌러서 바꿔 주세요.');
+}
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',2600)}
+
+/* ---------- 화면 틀 ---------- */
+$('#gIc1').innerHTML=ic('groups',16)+'게임사';
+$('#gIc2').innerHTML=ic('widgets',16)+'오버뷰'+ic('expand',16);
+$('#gIc3').innerHTML=ic('help',16)+'지원';
+$('#gIc4').innerHTML=ic('update',16)+'업데이트';
+$('#gIc5').innerHTML=ic('globe',16)+'한국어';
+$('#gIc6').innerHTML=ic('search',16)+'빠른 검색<span class="kbd">⌘</span><span class="kbd">K</span>';
+$('#gIc7').innerHTML=ic('person',16)+'hyungseop';
+$('#lnb').innerHTML=`<div class="app">APP</div>`+[['spark'],['link'],['bars'],['swap'],['db'],['tune',1],['gear']].map(([n,on])=>`<span class="nv ${on?'on':''}">${ic(n,20)}</span>`).join('');
+$('#h1ic').innerHTML=ic('help',22);
+$('#memoIc').innerHTML=ic('memo',16);$('#memoX').innerHTML=ic('close',18);
+$('#pkClose').innerHTML=ic('close',24);$('#epClose').innerHTML=ic('close',24);document.querySelector('#evPickerBg .selic.ep').outerHTML=ic('expand',16);$('#cfClose').innerHTML=ic('close',24);
+/* ---------- 값·단위 셀렉트 (에어브릿지와 같은 목록) ---------- */
+const PRESET={install:{y:[1,2],d:[1,7,14,30,60,90,180,365,730],h:[1,6,12,24],m:[1,5,15,30,60]},event:{y:[1,2],d:[1,7,14,30,60,90,180,365,730],h:[1,6,12,24],m:[1,5,15,30,60]}};
+const MAXU={install:{y:2,d:730,h:24,m:60},event:{y:2,d:730,h:24,m:60}};
+const UNITS={install:['y','d','h','m'],event:['y','d','h','m']};
+let SM=null; // {scope,i,k,kind,q}
+const smKey=(scope,i,k,kind)=>`${scope}|${i}|${k}|${kind}`;
+function vSel(scope,i,k,v){
+  const on=k2=>SM&&smKey(SM.scope,SM.i,SM.k,SM.kind)===smKey(scope,i,k,k2);
+  return `<span class="cell-edit"><button type="button" class="vsel ${on('v')?'open':''}" data-mk="${smKey(scope,i,k,'v')}" onclick="openSM(event,'${scope}',${i===null?'null':i},'${k}','v')">${v.n}${ic(on('v')?'expandLess':'expand',16)}</button><button type="button" class="usel" data-mk="${smKey(scope,i,k,'u')}" onclick="openSM(event,'${scope}',${i===null?'null':i},'${k}','u')">${UL[v.u]}${ic(on('u')?'expandLess':'expand',16)}</button></span>`;
+}
+function openSM(e,scope,i,k,kind){
+  e.stopPropagation();
+  if(SM&&smKey(SM.scope,SM.i,SM.k,SM.kind)===smKey(scope,i,k,kind)){closeSM();return}
+  SM={scope,i,k,kind,q:''};drawSM(true);markSM();
+}
+function closeSM(){SM=null;const m=$('#selMenu');m.classList.remove('open');markSM()}
+function markSM(){document.querySelectorAll('.vsel,.usel').forEach(b=>{const on=SM&&b.dataset.mk===smKey(SM.scope,SM.i,SM.k,SM.kind);b.classList.toggle('open',!!on&&b.classList.contains('vsel'));const svg=b.querySelector('svg path');if(svg)svg.setAttribute('d',ICP[on?'expandLess':'expand'])})}
+function posSM(){
+  if(!SM)return;const t=document.querySelector(`[data-mk="${smKey(SM.scope,SM.i,SM.k,SM.kind)}"]`);const m=$('#selMenu');
+  if(!t){closeSM();return}
+  const r=t.getBoundingClientRect();m.style.minWidth=(SM.kind==='v'?Math.max(r.width,160):r.width)+'px';
+  const h=m.offsetHeight;let top=r.bottom+4;if(top+h>innerHeight-8)top=Math.max(8,r.top-h-4);
+  m.style.left=Math.min(r.left,innerWidth-m.offsetWidth-8)+'px';m.style.top=top+'px';
+}
+function drawSM(focus){
+  const m=$('#selMenu');if(!SM)return;
+  const cur=getV(SM.scope,SM.i,SM.k), tk=smTab();
+  m.className='open'+(SM.kind==='u'?' unit':'');
+  if(SM.kind==='u'){
+    m.innerHTML=UNITS[tk].map(u=>`<button type="button" class="sm-it ${u===cur.u?'sel':''}" onclick="pickSM('u','${u}')">${UL[u]}</button>`).join('');
+  }else{
+    const max=MAXU[tk][cur.u], q=SM.q;
+    let list='';
+    if(q===''){
+      list=`<div class="sm-grp">All Values</div>`+PRESET[tk][cur.u].map(n=>`<button type="button" class="sm-it ${n===cur.n?'sel':''}" onclick="pickSM('v',${n})">${n}</button>`).join('')+`<button type="button" class="sm-it ${cur.n===0?'sel':''}" onclick="pickSM('v',0)">0<span> (기여하지 않음)</span></button>`;
+    }else{
+      const n=Number(q);
+      if(!Number.isInteger(n)||n<0||n>max)list=`<div class="sm-err">0~${max} 사이의 값을 입력해 주세요</div>`;
+      else if(n===0)list=`<button type="button" class="sm-it" onclick="pickSM('v',0)">0<span> (기여하지 않음)</span></button>`;
+      else if(PRESET[tk][cur.u].includes(n))list=`<button type="button" class="sm-it ${n===cur.n?'sel':''}" onclick="pickSM('v',${n})">${n}</button>`;
+      else list=`<button type="button" class="sm-it" onclick="pickSM('v',${n})">${n} <span>(freeform)</span></button>`;
+    }
+    if(focus||!m.querySelector('.sm-search')){
+      m.innerHTML=`<div class="sm-search">${ic('search',16)}<input type="number" min="0" max="${max}" placeholder="0 ~ ${max}" value="${q}" oninput="SM.q=this.value.trim();drawSM(false)" onkeydown="if(event.key==='Enter'){const b=$('#selMenu .sm-list .sm-it');if(b)b.click()}"></div><div class="sm-list">${list}</div>`;
+      if(focus)setTimeout(()=>m.querySelector('input')?.focus(),0);
+    }else m.querySelector('.sm-list').innerHTML=list;
+  }
+  posSM();
+}
+function pickSM(kind,val){
+  const {scope,i,k}=SM;closeSM();
+  if(kind==='u'){const cur=getV(scope,i,k);if(cur.u===val)return;setPick(scope,i,k,'u',val)}
+  else setPick(scope,i,k,'n',val);
+}
+document.addEventListener('mousedown',e=>{if(!SM)return;if(e.target.closest('#selMenu')||e.target.closest('.vsel,.usel'))return;closeSM()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&SM)closeSM()});
+window.addEventListener('scroll',posSM,true);window.addEventListener('resize',posSM);
+
+const getV=(scope,i,k)=>target(scope,i)[k];
+const smTab=()=>ui.tab==='install'?'install':'event';
+function setPick(scope,i,k,f,val){const t=target(scope,i);if(f==='u'){t[k].u=val;t[k].n=1}else t[k].n=val;ui.err='';render()}
+
+/* ---------- 종료일 달력 ---------- */
+let CAL=null; // {ci, sel, y, m}
+const pad2=n=>String(n).padStart(2,'0');
+const ymd=(y,m,d)=>`${y}-${pad2(m+1)}-${pad2(d)}`;
+const addDays=(iso,n)=>{const d=new Date(iso+'T00:00:00');d.setDate(d.getDate()+n);return ymd(d.getFullYear(),d.getMonth(),d.getDate())};
+const addMonths=(iso,n)=>{const d=new Date(iso+'T00:00:00'),day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return ymd(d.getFullYear(),d.getMonth(),d.getDate())};
+const CAL_PRE=[['종료일 없음',()=>null],['1주 뒤',()=>addDays(TODAY,7)],['2주 뒤',()=>addDays(TODAY,14)],['1개월 뒤',()=>addMonths(TODAY,1)],['3개월 뒤',()=>addMonths(TODAY,3)]];
+function openCal(e,ci){
+  e.stopPropagation();
+  if(CAL&&CAL.ci===ci){closeCal();return}
+  const cur=ui.draft.campaigns[ci].end||null, base=new Date((cur||TODAY)+'T00:00:00');
+  CAL={ci,sel:cur,y:base.getFullYear(),m:base.getMonth(),txt:cur||''};drawCal();
+}
+function closeCal(){CAL=null;$('#calPop').classList.remove('open');document.querySelectorAll('.cal-trig').forEach(b=>b.classList.remove('on'))}
+function monthGrid(y,m){
+  const first=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate();
+  let h=`<div><div class="cal-mh"><b>${pad2(m+1)}. ${y}</b></div><table class="cal-g"><tr>${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<th>${d}</th>`).join('')}</tr><tr>`;
+  for(let i=0;i<first;i++)h+='<td class="blank"></td>';
+  for(let d=1;d<=days;d++){
+    const iso=ymd(y,m,d), dis=iso<TODAY, cls=[dis?'dis':'',iso===TODAY?'today':'',iso===CAL.sel?'sel':''].join(' ');
+    h+=`<td class="${cls}" ${dis?'':`onclick="calPick('${iso}')"`}>${d}</td>`;
+    if((first+d)%7===0&&d<days)h+='</tr><tr>';
+  }
+  return h+'</tr></table></div>';
+}
+function drawCal(){
+  const p=$('#calPop');if(!CAL)return;
+  const n=new Date(CAL.y,CAL.m+1,1), minBack=(CAL.y>2026||(CAL.y===2026&&CAL.m>9));
+  const preOn=f=>{const v=f();return v===CAL.sel};
+  p.innerHTML=`<div class="cal-pre">${CAL_PRE.map(([l,f],i)=>`<button type="button" class="${preOn(f)?'on':''}" onclick="calPre(${i})">${l}</button>`).join('')}</div>
+  <div class="cal-main">
+    <div class="cal-top"><span class="cal-field" id="calField">${ic('cal',16)}<input id="calIn" placeholder="YYYY-MM-DD" value="${CAL.txt}" oninput="calType(this.value)"></span></div>
+    <div class="cal-months">
+      <div style="position:relative">${monthGrid(CAL.y,CAL.m)}<button type="button" class="cal-nav" style="position:absolute;left:0;top:0" ${minBack?'':'disabled'} onclick="calMove(-1)">${ic('chevL',18)}</button></div>
+      <div style="position:relative">${monthGrid(n.getFullYear(),n.getMonth())}<button type="button" class="cal-nav" style="position:absolute;right:0;top:0" onclick="calMove(1)">${ic('chev',18)}</button></div>
+    </div>
+    <div class="cal-foot"><div class="cal-note">${TODAY}부터 고를 수 있습니다.<br>종료일이 지나면 그 뒤 들어오는 데이터부터 채널 값을 따릅니다.</div><button type="button" class="btn primary w130" onclick="calDone()">완료</button></div>
+  </div>`;
+  p.querySelectorAll('.cal-mh').forEach((h,i)=>h.style.paddingLeft=i===0?'38px':'0');
+  p.classList.add('open');
+  document.querySelectorAll('.cal-trig').forEach(b=>b.classList.toggle('on',+b.dataset.cal===CAL.ci));
+  const t=document.querySelector(`.cal-trig[data-cal="${CAL.ci}"]`);
+  if(t){const r=t.getBoundingClientRect();let top=r.bottom+4;if(top+p.offsetHeight>innerHeight-8)top=Math.max(8,r.top-p.offsetHeight-4);p.style.left=Math.min(r.left,innerWidth-p.offsetWidth-8)+'px';p.style.top=top+'px'}
+}
+function calMove(d){const x=new Date(CAL.y,CAL.m+d,1);CAL.y=x.getFullYear();CAL.m=x.getMonth();drawCal()}
+function calPick(iso){CAL.sel=iso;CAL.txt=iso;drawCal()}
+function calPre(i){const v=CAL_PRE[i][1]();CAL.sel=v;CAL.txt=v||'';if(v){const d=new Date(v+'T00:00:00');CAL.y=d.getFullYear();CAL.m=d.getMonth()}drawCal()}
+function calType(v){
+  CAL.txt=v;const ok=/^\d{4}-\d{2}-\d{2}$/.test(v)&&!isNaN(new Date(v+'T00:00:00'))&&v>=TODAY;
+  $('#calField').classList.toggle('bad',!!v&&!ok);
+  if(ok){CAL.sel=v;const d=new Date(v+'T00:00:00');CAL.y=d.getFullYear();CAL.m=d.getMonth();drawCal();const i=$('#calIn');i.focus();i.setSelectionRange(v.length,v.length)}
+}
+function calDone(){const {ci,sel}=CAL;closeCal();setEnd(ci,sel)}
+document.addEventListener('mousedown',e=>{if(!CAL)return;if(e.target.closest('#calPop')||e.target.closest('.cal-trig'))return;closeCal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&CAL)closeCal()});
+window.addEventListener('scroll',()=>{if(CAL)drawCal()},true);
+/* ---------- 툴팁 ---------- */
+let tipT=null;
+function showTip(el){clearTimeout(tipT);const p=$('#tipPop');p.innerHTML=el.dataset.tip+(el.dataset.link?`<br><a>${ic('globe',14)}가이드 보러가기</a>`:'');p.classList.add('open');const r=el.getBoundingClientRect();let top=r.bottom+6;if(top+p.offsetHeight>innerHeight-8)top=r.top-p.offsetHeight-6;p.style.left=Math.max(8,Math.min(r.left-8,innerWidth-p.offsetWidth-8))+'px';p.style.top=top+'px'}
+function hideTip(){tipT=setTimeout(()=>$('#tipPop').classList.remove('open'),120)}
+document.addEventListener('mouseover',e=>{const t=e.target.closest('.tip');if(t)showTip(t);else if(e.target.closest('#tipPop'))clearTimeout(tipT)});
+document.addEventListener('mouseout',e=>{const t=e.target.closest('.tip,#tipPop');if(t&&!(e.relatedTarget&&t.contains(e.relatedTarget)))hideTip()});
+window.addEventListener('scroll',()=>$('#tipPop').classList.remove('open'),true);
+function leaveCancel(){ui.leaveTo=null;$('#leaveBg').classList.remove('open')}
+function leaveGo(){const t=ui.leaveTo;leaveCancel();closeSM&&closeSM();if(typeof closeCal==='function'&&CAL)closeCal();ui.editing=false;ui.draft=null;ui.err='';ui.tab=t;document.querySelectorAll('.mtab').forEach(b=>b.classList.toggle('on',b.dataset.t===t));render()}
+
+render();
+</script>
+</body>
+</html>
